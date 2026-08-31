@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "giolt-docs",
+  "name": "docs",
   "compatibility_date": "2026-08-31",
   "workers_dev": false,
   "preview_urls": false,
