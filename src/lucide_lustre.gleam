@@ -80,3 +80,54 @@ pub fn panel_left_close(attributes: List(Attribute(a))) {
     ],
   )
 }
+
+pub fn triangle_alert(attributes: List(Attribute(a))) {
+  svg.svg(
+    [
+      attribute("stroke-linejoin", "round"),
+      attribute("stroke-linecap", "round"),
+      attribute("stroke-width", "2"),
+      attribute("stroke", "currentColor"),
+      attribute("fill", "none"),
+      attribute("viewBox", "0 0 24 24"),
+      attribute("height", "24"),
+      attribute("width", "24"),
+      ..attributes
+    ],
+    [
+      svg.path([
+        attribute(
+          "d",
+          "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
+        ),
+      ]),
+      svg.path([attribute("d", "M12 9v4")]),
+      svg.path([attribute("d", "M12 17h.01")]),
+    ],
+  )
+}
+
+pub fn info(attributes: List(Attribute(a))) {
+  svg.svg(
+    [
+      attribute("stroke-linejoin", "round"),
+      attribute("stroke-linecap", "round"),
+      attribute("stroke-width", "2"),
+      attribute("stroke", "currentColor"),
+      attribute("fill", "none"),
+      attribute("viewBox", "0 0 24 24"),
+      attribute("height", "24"),
+      attribute("width", "24"),
+      ..attributes
+    ],
+    [
+      svg.circle([
+        attribute("r", "10"),
+        attribute("cy", "12"),
+        attribute("cx", "12"),
+      ]),
+      svg.path([attribute("d", "M12 16v-4")]),
+      svg.path([attribute("d", "M12 8h.01")]),
+    ],
+  )
+}

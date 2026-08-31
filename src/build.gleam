@@ -1,3 +1,4 @@
+import docs/lib/djot_renderer
 import docs/views/page
 import envie
 import frontmatter
@@ -7,7 +8,6 @@ import gleam/list
 import gleam/option
 import gleam/result
 import gleam/string
-import jot
 import lustre/element/html
 import lustre/ssg
 import simplifile
@@ -19,22 +19,33 @@ pub fn main() {
   build_css()
 }
 
-fn get_pages() {
-  let assert Ok(files) = simplifile.get_files("./src/content")
+fn get_pages(dir: String) {
+  let directory = "./src/content" <> dir
+
+  let assert Ok(files) = simplifile.read_directory(directory)
     as "Failed to get all markdown files"
 
-  list.map(files, fn(file_path) {
+  files
+  |> list.filter_map(fn(entry) {
+    let file_path = directory <> "/" <> entry
+
+    case simplifile.is_file(file_path) {
+      Ok(True) -> Ok(file_path)
+      _ -> Error(Nil)
+    }
+  })
+  |> list.map(fn(file_path) {
     let path =
-      string.replace(file_path, "./src/content/", "")
+      string.replace(file_path, directory <> "/", "")
       |> string.replace(".md", "")
 
     let current_path =
-      file_path
-      |> string.replace("./src/content", "")
+      string.replace(file_path, "./src/content", "")
       |> string.replace(".md", "")
       |> string.replace("index", "")
 
     let assert Ok(file_contents) = simplifile.read(file_path)
+
     let extracted = frontmatter.extract(file_contents)
 
     let assert Ok(parsed) = case extracted.frontmatter {
@@ -43,7 +54,7 @@ fn get_pages() {
     }
       as "Failed to parse toml"
 
-    let parsed_content = jot.to_html(extracted.content)
+    let parsed_content = djot_renderer.parse(extracted.content)
 
     #(
       path,
@@ -57,15 +68,39 @@ fn get_pages() {
   |> dict.from_list
 }
 
-fn build_static() {
-  let pages = get_pages()
+fn get_content_dirs() {
+  let assert Ok(entries) = simplifile.read_directory("./src/content")
+    as "Failed to get content directories"
 
+  entries
+  |> list.filter(fn(entry) {
+    let full_path = "./src/content/" <> entry
+    case simplifile.is_directory(full_path) {
+      Ok(True) -> True
+      _ -> False
+    }
+  })
+  |> list.map(fn(dir) { "/" <> dir })
+}
+
+fn build_static() {
+  let root_pages = get_pages("")
   let build =
-    ssg.new("./dist")
-    |> ssg.add_dynamic_route("/", pages, page.element)
+    get_content_dirs()
+    |> list.fold(
+      ssg.new("./dist") |> ssg.add_dynamic_route("/", root_pages, page.element),
+      fn(build, dir) {
+        let pages = get_pages(dir)
+
+        build
+        |> ssg.add_dynamic_route(dir, pages, page.element)
+      },
+    )
     |> ssg.add_static_route(
       "/404",
-      html.html([], [html.script([], "window.location.replace(\"/\");")]),
+      html.html([], [
+        html.script([], "window.location.replace(\"/\");"),
+      ]),
     )
     |> ssg.add_static_dir("./public")
     |> ssg.build

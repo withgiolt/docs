@@ -19,7 +19,9 @@ pub fn element(title: String) {
           ],
           [lucide_lustre.panel_left_open([])],
         ),
-        html.p([attribute.class("ml-2 font-bold text-xl")], [html.text(title)]),
+        html.p([attribute.class("ml-2 font-bold text-xl lg:hidden")], [
+          html.text(title),
+        ]),
       ]),
     ],
   )
