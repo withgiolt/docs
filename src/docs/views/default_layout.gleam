@@ -174,7 +174,7 @@ pub fn element(
           html.ul(
             [
               attribute.class(
-                "menu bg-base-100 border-r border-base-200 min-h-full w-80 p-4 pt-20 lg:pt-4",
+                "menu bg-base-100 border-r border-base-200 min-h-full w-80 p-4 pt-20 lg:pt-4 lg:min-h-[calc(100%-5rem)]",
               ),
             ],
             list.map(
