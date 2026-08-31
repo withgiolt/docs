@@ -1,0 +1,18 @@
+name = "docs"
+version = "1.0.0"
+
+target = "javascript"
+
+[dependencies]
+gleam_stdlib = ">= 1.0.0 and < 2.0.0"
+lustre = ">= 5.7.1 and < 6.0.0"
+simplifile = ">= 2.7.0 and < 3.0.0"
+glailglind = ">= 2.3.0 and < 3.0.0"
+lustre_ssg = { git = "https://github.com/withgiolt/lustre_ssg", ref = "55748a9" }
+esgleam = { git = "https://github.com/withgiolt/esgleam", ref = "5960117" }
+gleam_http = ">= 4.3.0 and < 5.0.0"
+envie = ">= 1.2.0 and < 2.0.0"
+jot = ">= 12.1.1 and < 13.0.0"
+frontmatter = ">= 1.0.1 and < 2.0.0"
+tom = ">= 2.1.0 and < 3.0.0"
+lucide_lustre = ">= 2.0.3 and < 3.0.0"

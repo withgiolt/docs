@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "giolt-docs",
+  "compatibility_date": "2026-08-31",
+  "workers_dev": false,
+  "preview_urls": false,
+  "build": {
+    "watch_dir": "./src",
+    "command": "just build"
+  },
+  "dev": {
+    "port": 3000
+  },
+  "route": {
+    "pattern": "giolt.com",
+    "custom_domain": true
+  },
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "drop-trailing-slash"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json",
+  "nodeModulesDir": "auto",
+  "tasks": {
+    "wrangler": "NODE_ENV=development deno run -E --allow-run npm:wrangler"
+  },
+  "imports": {
+    "@tailwindcss/typography": "npm:@tailwindcss/typography@^0.5.20",
+    "daisyui": "npm:daisyui@^5.7.22",
+    "tailwindcss": "npm:tailwindcss@^4.3.3",
+    "wrangler": "npm:wrangler@^4.127.1"
+  }
+}
