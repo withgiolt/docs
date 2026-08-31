@@ -20,8 +20,14 @@ pub fn element(page: Page) {
   default_layout.element(page.current_path, title, [
     element.unsafe_raw_html(
       "",
-      "div",
-      [attribute.class("prose p-4")],
+      "article",
+      [
+        attribute.class(
+          "prose prose-neutral dark:prose-invert p-4 max-w-5xl mx-auto "
+          <> "prose-headings:font-pixel prose-h1:text-5xl "
+          <> "prose-pre:bg-base-200 prose-pre:text-base-content prose-pre:border prose-pre:border-base-300",
+        ),
+      ],
       page.content,
     ),
   ])

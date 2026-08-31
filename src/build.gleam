@@ -43,13 +43,13 @@ fn get_pages() {
     }
       as "Failed to parse toml"
 
-    let content_as_html = jot.to_html(extracted.content)
+    let parsed_content = jot.to_html(extracted.content)
 
     #(
       path,
       page.Page(
         frontmatter: parsed,
-        content: content_as_html,
+        content: parsed_content,
         current_path: current_path,
       ),
     )

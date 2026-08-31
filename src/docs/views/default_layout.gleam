@@ -1,23 +1,12 @@
+import docs/lib/sidebar_features.{
+  type SidebarFeature, SidebarDivider, SidebarDropdown, SidebarLink,
+}
 import docs/views/navbar
 import gleam/list
 import lucide_lustre
 import lustre/attribute
 import lustre/element.{type Element}
 import lustre/element/html
-
-pub type SidebarFeature {
-  SidebarLink(text: String, link: String, new_tab: Bool, current_path: String)
-  SidebarDropdown(text: String, sub: List(SidebarFeature))
-  SidebarDivider
-}
-
-fn get_sidebar_features(current_path: String) {
-  [
-    SidebarLink("Giolt", "https://giolt.com", False, current_path:),
-    SidebarDivider,
-    SidebarLink("Home", "/", False, current_path:),
-  ]
-}
 
 fn sidebar_feature(link: SidebarFeature) {
   case link {
@@ -26,7 +15,7 @@ fn sidebar_feature(link: SidebarFeature) {
         html.a(
           [
             attribute.href(link),
-            attribute.classes([#("menu-active", current_path == link)]),
+            attribute.classes([#("menu-focus", current_path == link)]),
             ..case external {
               True -> [attribute.target("_blank")]
               False -> []
@@ -46,15 +35,10 @@ fn sidebar_feature(link: SidebarFeature) {
     SidebarDropdown(text, sub) -> {
       element.fragment([
         html.li([], [
-          html.details([attribute.open(True)], [
-            html.summary([attribute.class("menu-dropdown-toggle")], [
-              html.text(text),
-            ]),
-            html.ul(
-              [attribute.class("menu-dropdown")],
-              list.map(sub, sidebar_feature),
-            ),
+          html.p([attribute.class("menu-title")], [
+            html.text(text),
           ]),
+          html.ul([], list.map(sub, sidebar_feature)),
         ]),
       ])
     }
@@ -65,13 +49,13 @@ fn sidebar_feature(link: SidebarFeature) {
 }
 
 pub fn element(
-  current_path: String,
+  current_path current_path: String,
   title title: String,
   children children: List(Element(Nil)),
 ) {
-  let title = case title {
+  let formatted_title = case title {
     "Giolt Docs" -> "Giolt Docs — Hosting for Gleam"
-    title -> title <> " — Giolt"
+    title -> title <> " — Giolt Docs"
   }
 
   html.html([attribute.lang("en")], [
@@ -127,7 +111,7 @@ pub fn element(
         ],
         "",
       ),
-      html.title([], title),
+      html.title([], formatted_title),
     ]),
     html.body([attribute.class("flex flex-col min-svh")], [
       html.div([attribute.class("drawer lg:drawer-open")], [
@@ -137,11 +121,11 @@ pub fn element(
           attribute.class("drawer-toggle"),
         ]),
         html.div([attribute.class("drawer-content")], [
-          navbar.element(),
-          html.main([attribute.class("flex-1")], children),
+          navbar.element(title),
+          html.main([attribute.class("flex-1 lg:ml-80 mt-16")], children),
         ]),
 
-        html.div([attribute.class("drawer-side")], [
+        html.div([attribute.class("drawer-side fixed z-50")], [
           html.label(
             [
               attribute.for("drawer"),
@@ -150,9 +134,53 @@ pub fn element(
             ],
             [],
           ),
+          html.div(
+            [
+              attribute.class(
+                "navbar bg-base-100 z-50 border-b border-r border-base-200 px-4 w-80",
+              ),
+            ],
+            [
+              html.div([attribute.class("navbar-start")], [
+                html.h1(
+                  [
+                    attribute.class(
+                      "flex flex-row items-center gap-2 font-bold",
+                    ),
+                  ],
+                  [
+                    html.img([
+                      attribute.src("/logo_rounded.svg"),
+                      attribute.class("size-8"),
+                    ]),
+                    html.text("Giolt Docs"),
+                  ],
+                ),
+              ]),
+              html.div([attribute.class("navbar-end")], [
+                html.label(
+                  [
+                    attribute.for("drawer"),
+                    attribute.aria_label("close sidebar"),
+                    attribute.class(
+                      "btn btn-square btn-ghost drawer-button lg:hidden",
+                    ),
+                  ],
+                  [lucide_lustre.panel_left_close([])],
+                ),
+              ]),
+            ],
+          ),
           html.ul(
-            [attribute.class("menu bg-base-200 min-h-full w-80 p-4")],
-            list.map(get_sidebar_features(current_path), sidebar_feature),
+            [
+              attribute.class(
+                "menu bg-base-100 border-r border-base-200 min-h-full w-80 p-4 pt-20 lg:pt-4",
+              ),
+            ],
+            list.map(
+              sidebar_features.get_sidebar_features(current_path),
+              sidebar_feature,
+            ),
           ),
         ]),
       ]),
