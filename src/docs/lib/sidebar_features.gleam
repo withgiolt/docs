@@ -7,6 +7,7 @@ pub type SidebarFeature {
 pub fn get_sidebar_features(current_path: String) {
   [
     SidebarLink("Giolt", "https://giolt.com", False, current_path:),
+    SidebarLink("GitHub", "https://github.com/withgiolt", True, current_path:),
     SidebarDivider,
     SidebarDropdown("Hello, world!", [
       SidebarLink("Home", "/", False, current_path:),
