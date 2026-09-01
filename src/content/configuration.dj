@@ -10,12 +10,13 @@ app.
 ```toml
 # gleam.toml
 [tools.giolt]
-outdir = "./dist",
-static_dir = "./public",
-entry_module = "app",
+outdir = "./dist"
+static_dir = "./public"
+prebuild_command = "gleam run -m build"
+entry_module = "app"
 bundle_aliases = [
     "@gleam=./build/dev/javascript"
-],
+]
 ```
 
 ### `outdir`
@@ -30,6 +31,10 @@ bundle_aliases = [
 - Defines what folder to be copied into `{outdir}/static`
 - If left undefined, it will not try to copy from any folder
 
+### `prebuild_command`
+
+- Optional
+- If defined, will run it before any of the build steps
 
 ### `entry_module`
 
