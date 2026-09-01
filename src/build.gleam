@@ -34,14 +34,15 @@ fn get_pages(dir: String) {
       _ -> Error(Nil)
     }
   })
+  |> list.filter(fn(file_path) { string.ends_with(file_path, ".dj") })
   |> list.map(fn(file_path) {
     let path =
       string.replace(file_path, directory <> "/", "")
-      |> string.replace(".md", "")
+      |> string.replace(".dj", "")
 
     let current_path =
       string.replace(file_path, "./src/content", "")
-      |> string.replace(".md", "")
+      |> string.replace(".dj", "")
       |> string.replace("index", "")
 
     let assert Ok(file_contents) = simplifile.read(file_path)

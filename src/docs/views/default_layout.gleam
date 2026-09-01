@@ -86,21 +86,6 @@ pub fn element(
         attribute.name("apple-mobile-web-app-status-bar-style"),
         attribute.content("black-translucent"),
       ]),
-      html.link([
-        attribute.rel("preconnect"),
-        attribute.href("https://fonts.googleapis.com"),
-      ]),
-      html.link([
-        attribute.rel("preconnect"),
-        attribute.href("https://fonts.gstatic.com"),
-        attribute.crossorigin(""),
-      ]),
-      html.link([
-        attribute.href(
-          "https://fonts.googleapis.com/css2?family=Geist+Mono:ital,wght@0,100..900;1,100..900&family=Geist+Pixel&display=swap",
-        ),
-        attribute.rel("stylesheet"),
-      ]),
       html.link([attribute.rel("stylesheet"), attribute.href("/docs.css")]),
       html.script(
         [

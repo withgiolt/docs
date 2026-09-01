@@ -1,0 +1,24 @@
+---
+title = "Get started"
+---
+
+# Get started
+
+To get started with Giolt, first install the Giolt SDK:
+
+```sh
+gleam add --dev giolt_sdk
+```
+
+The Giolt SDK includes the CLI to build, develop and deploy your app with Giolt.
+To build your app, run:
+
+```sh
+gleam run -m giolt build
+```
+
+This will create a `./build/prod/javascript` folder with the entrypoint to your app.
+
+::: warning
+This page is still work in progress.
+:::
