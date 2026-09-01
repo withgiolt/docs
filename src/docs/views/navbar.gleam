@@ -10,19 +10,20 @@ pub fn element(title: String) {
       ),
     ],
     [
-      html.div([attribute.class("navbar-start")], [
-        html.label(
-          [
-            attribute.for("drawer"),
-            attribute.aria_label("open sidebar"),
-            attribute.class("btn btn-square btn-ghost drawer-button lg:hidden"),
-          ],
-          [lucide_lustre.panel_left_open([])],
-        ),
-        html.p([attribute.class("ml-2 font-bold text-xl lg:hidden")], [
+      html.label(
+        [
+          attribute.for("drawer"),
+          attribute.aria_label("open sidebar"),
+          attribute.class("btn btn-square btn-ghost drawer-button lg:hidden"),
+        ],
+        [lucide_lustre.panel_left_open([])],
+      ),
+      html.p(
+        [attribute.class("ml-2 font-bold text-xl lg:hidden line-clamp-1")],
+        [
           html.text(title),
-        ]),
-      ]),
+        ],
+      ),
     ],
   )
 }

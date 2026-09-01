@@ -6,6 +6,7 @@ import smalto
 import smalto/grammar
 import smalto/languages/bash
 import smalto/languages/gleam
+import smalto/languages/toml
 import smalto/lustre as smalto_lustre
 import smalto/lustre/themes
 
@@ -15,6 +16,7 @@ pub fn container(language: option.Option(String), content: String) {
       case lang {
         "bash" -> bash.grammar()
         "gleam" -> gleam.grammar()
+        "toml" -> toml.grammar()
         _ -> grammar.Grammar("none", option.None, [])
       }
     }

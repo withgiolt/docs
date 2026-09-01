@@ -11,6 +11,12 @@ pub fn get_sidebar_features(current_path: String) {
     SidebarDropdown("Hello, world!", [
       SidebarLink("Home", "/", False, current_path:),
       SidebarLink("Get started", "/get-started", False, current_path:),
+      SidebarLink(
+        "Giolt SDK Configuration",
+        "/configuration",
+        False,
+        current_path:,
+      ),
     ]),
     SidebarDropdown("GlowVM - EXPERIMENTAL", [
       SidebarLink("About GlowVM", "/glowvm/about", False, current_path:),

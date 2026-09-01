@@ -17,25 +17,24 @@ To build your app, run:
 $ gleam run -m giolt build
 ```
 
-This will create a `./build/prod/javascript` folder with the entrypoint to your app.
+This will create a `./dist` folder with the entrypoint to your app.
 
-Giolt also provides a development live server for your app:
+## Configuration
 
+The Giolt SDK is configured from `gleam.toml`:
+
+```toml
+# gleam.toml
+[tools.giolt]
+outdir = "./dist",
+static_dir = "./public",
+entry_module = "app",
+bundle_aliases = [
+    "@gleam=./build/dev/javascript"
+],
 ```
-$ gleam run -m giolt dev
-```
 
-Note that if you don't want to write all of that everytime you start coding, you can use
-the included `gleam dev` command by creating a `app_dev.gleam` file:
-
-```gleam
-// app_dev.gleam
-import giolt_sdk/dev.{dev}
-
-pub fn main() {
-  dev()
-}
-```
+[Read more about Giolt SDK configuration](/configuration)
 
 ::: warning
 This page is still work in progress.
