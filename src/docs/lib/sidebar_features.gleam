@@ -12,7 +12,7 @@ pub fn get_sidebar_features(current_path: String) {
       SidebarLink("Home", "/", False, current_path:),
       SidebarLink("Get started", "/get-started", False, current_path:),
     ]),
-    SidebarDropdown("GlowVM", [
+    SidebarDropdown("GlowVM - EXPERIMENTAL", [
       SidebarLink("About GlowVM", "/glowvm/about", False, current_path:),
     ]),
   ]
