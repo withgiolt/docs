@@ -10,31 +10,31 @@ To get started with Giolt, first install the Giolt SDK:
 $ gleam add --dev giolt_sdk
 ```
 
-The Giolt SDK includes the CLI to build, develop and deploy your app with Giolt.
+The Giolt SDK provides command-line tools for building your app with Giolt.
 To build your app, run:
 
 ```
 $ gleam run -m giolt build
 ```
 
-This will create a `./dist` folder with the entrypoint to your app.
+With an `entry_module` configured, this creates a `./dist` folder containing the entrypoint to your app.
 
-## Configuration
+[Read the full Giolt SDK reference](/sdk)
+
+## SDK configuration
 
 The Giolt SDK is configured from `gleam.toml`:
 
 ```toml
 # gleam.toml
 [tools.giolt]
-outdir = "./dist",
-static_dir = "./public",
-entry_module = "app",
+outdir = "./dist"
+static_dir = "./public"
+entry_module = "app"
 bundle_aliases = [
     "@gleam=./build/dev/javascript"
-],
+]
 ```
-
-[Read more about Giolt SDK configuration](/configuration)
 
 ::: warning
 This page is still work in progress.

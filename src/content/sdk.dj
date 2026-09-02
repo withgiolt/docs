@@ -1,0 +1,119 @@
+---
+title = "Giolt SDK"
+---
+
+# Giolt SDK
+
+The Giolt SDK provides the command-line tools for compiling a Gleam project and, when
+configured, bundling its JavaScript entrypoint and static assets for Giolt.
+
+Run the SDK commands from your project root. The SDK currently exposes one command: `build`.
+
+## Installation
+
+### Gleam projects
+
+Add the SDK as a development dependency:
+
+```sh
+gleam add --dev giolt_sdk
+```
+
+Then run a build with:
+
+```sh
+gleam run -m giolt build
+```
+
+### npm
+
+Install the npm package locally, or run it without installing it permanently:
+
+```sh
+npm install --save-dev @giolt/cli
+npx @giolt/cli build
+```
+
+## Command reference
+
+### `build`
+
+```sh
+gleam run -m giolt -- build [OPTIONS]
+npx @giolt/cli build [OPTIONS]
+```
+
+`build` compiles the project with `gleam build`, using the selected target. For a JavaScript
+project with an `entry_module` configured, it also creates the deployable bundle. If `static_dir`
+is configured, its contents are copied to `<outdir>/static`.
+
+### `--target <TARGET>` / `-t <TARGET>`
+
+Select the Gleam build target:
+
+- `javascript` — the supported target for creating a Giolt bundle
+- `erlang` — accepted by the SDK and passed to Gleam, but Erlang bundling is not supported yet
+
+If the option is omitted, the SDK uses the top-level `target` from `gleam.toml`. When that value
+is missing or cannot be read, it defaults to `javascript`.
+
+For example:
+
+```sh
+gleam run -m giolt -- build --target javascript
+gleam run -m giolt -- build -t javascript
+npx @giolt/cli build --target javascript
+```
+
+### `--help` / `-h`
+
+Print help for the SDK or for a specific command:
+
+```sh
+gleam run -m giolt -- --help
+gleam run -m giolt -- build --help
+npx @giolt/cli --help
+npx @giolt/cli build --help
+```
+
+The `--` after `gleam run -m giolt` makes sure the option is passed to the SDK rather than
+being interpreted by Gleam.
+
+## Build lifecycle
+
+The `build` command performs these steps:
+
+1. Compile the project with `gleam build --target <target>`.
+2. Load the project name and Giolt settings from `gleam.toml`.
+3. Delete the configured `outdir` if it already exists.
+4. Run `prebuild_command`, when configured.
+5. Bundle the configured `entry_module`, when configured.
+6. Copy `static_dir` to `<outdir>/static`, when configured.
+
+::: warning
+The output directory is cleared before every build. Keep source files and persistent data outside
+of `outdir`.
+:::
+
+## Configuration
+
+The SDK reads its settings from the `[tools.giolt]` table in `gleam.toml`:
+
+```toml
+[tools.giolt]
+outdir = "./dist"
+static_dir = "./public"
+prebuild_command = "gleam run -m build"
+entry_module = "app"
+bundle_aliases = [
+    "@gleam=./build/dev/javascript"
+]
+```
+
+- `outdir` is the build output directory. It defaults to `./dist`.
+- `static_dir` is optional. When set, the directory is copied to `<outdir>/static`.
+- `prebuild_command` is optional and runs after `outdir` is cleared, before bundling. Use a command
+  followed by space-separated arguments, such as `gleam run -m build`.
+- `entry_module` is optional. When set, the generated bundle imports that compiled module and calls
+  its exported `handler` for incoming requests.
+- `bundle_aliases` is optional. Each entry is an esbuild import alias in `from=to` format.

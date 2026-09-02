@@ -9,7 +9,7 @@ WebAssembly with WASI bindings, plus additional shims and NIFs to improve compat
 and common OTP libraries.
 
 ::: warning
-Giolt and GlowVM are work in progress and not yet published. The CLI, runtime and docs are all evolving
+Giolt and GlowVM are work in progress and not yet published. The SDK, runtime and docs are all evolving
 — expect breaking changes. Not ready for production use.
 :::
 
