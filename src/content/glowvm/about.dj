@@ -13,6 +13,9 @@ Giolt and GlowVM are work in progress and not yet published. The SDK, runtime an
 — expect breaking changes. Not ready for production use.
 :::
 
+New to GlowVM? See [How to use GlowVM](/glowvm/how-to-use) for a walkthrough of packing and
+deploying an app.
+
 ## How it works
 
 Gleam on the Erlang target compiles to BEAM bytecode. GlowVM runs that bytecode on AtomVM built for
@@ -88,3 +91,25 @@ but coverage is still partial.
 
 GlowVM's compatibility layer is expanding. As shims land, previously unsupported stdlib calls will start
 working without code changes — just rebuild your pack.
+
+## Roadmap
+
+GlowVM is early. Roughly in priority order:
+
+- *Publish to Hex.* GlowVM is currently only usable as a `path`/git dependency; a tagged Hex release
+  is the next milestone.
+- *Track AtomVM* `0.7.0` *stable.* GlowVM currently pins `vendor/AtomVM` to `v0.7.0-alpha.1` for its
+  improved `ets` support; it will move to the stable `0.7.0` tag once released.
+- *Wider stdlib/OTP coverage.* Closing `undef` gaps in `crypto`, `logger`, `rand`, and `file`/`filelib`
+  shims is ongoing, driven by what real Gleam dependencies need.
+- *Async host calls.* A JS-Promise-Integration-based bridge for calling back out to the host runtime
+  (e.g. `fetch` from within a handler) is being explored, so handlers aren't limited to synchronous,
+  request-scoped work. Note: this differs from `elixir-workers` implementation as that uses a
+  2 pass system, while GlowVM will directly pause the runtime to do work and resumes when done.
+- *Smaller cold starts.* Reducing the shipped `glowvm.wasm` size and packed BEAM footprint to cut
+  cold-start latency.
+- *Broader WASI host support.* Cloudflare Workers is the primary target today; other WASI-compliant
+  JS runtimes (Deno Deploy and similar) are being validated as they come up.
+
+Have a use case that needs something not listed here? Open an issue on
+[GitHub](https://github.com/withgiolt/glowvm).

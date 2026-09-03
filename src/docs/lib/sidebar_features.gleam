@@ -16,6 +16,7 @@ pub fn get_sidebar_features(current_path: String) {
     ]),
     SidebarDropdown("GlowVM - EXPERIMENTAL", [
       SidebarLink("About GlowVM", "/glowvm/about", False, current_path:),
+      SidebarLink("How to use", "/glowvm/how-to-use", False, current_path:),
     ]),
   ]
 }
