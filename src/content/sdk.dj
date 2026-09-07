@@ -87,7 +87,8 @@ The `build` command performs these steps:
 2. Load the project name and Giolt settings from `gleam.toml`.
 3. Delete the configured `outdir` if it already exists.
 4. Run `prebuild_command`, when configured.
-5. Bundle the configured `entry_module`, when configured.
+5. Bundle the configured `entry_module`, when configured, inlining `PUBLIC_`/`PRIVATE_` variables
+   from `env_file`.
 6. Copy `static_dir` to `<outdir>/static`, when configured.
 
 ::: warning
@@ -105,6 +106,7 @@ outdir = "./dist"
 static_dir = "./public"
 prebuild_command = "gleam run -m build"
 entry_module = "app"
+env_file = ".env"
 bundle_aliases = [
     "@gleam=./build/dev/javascript"
 ]
@@ -116,4 +118,34 @@ bundle_aliases = [
   followed by space-separated arguments, such as `gleam run -m build`.
 - `entry_module` is optional. When set, the generated bundle imports that compiled module and calls
   its exported `handler` for incoming requests.
+- `env_file` is optional and defaults to `.env`. See [Environment variables](#environment-variables).
 - `bundle_aliases` is optional. Each entry is an esbuild import alias in `from=to` format.
+
+## Environment variables
+
+When bundling, the SDK loads `env_file` (a `.env`-formatted file, `.env` by default) and inlines
+every variable prefixed `PUBLIC_` or `PRIVATE_` into the bundle as `process.env.<NAME>`, replacing
+each reference with its literal value at build time. Variables without one of these prefixes are
+ignored and stay out of the bundle. Values already set in the environment take precedence over
+the file.
+
+```sh
+# .env
+PUBLIC_API_URL=https://api.example.com
+PRIVATE_API_KEY=super-secret
+```
+
+```gleam
+let url = envie.get_string("PUBLIC_API_URL", "")
+```
+
+The `PUBLIC_`/`PRIVATE_` split is a naming convention for you to enforce in your own code — for
+example, only reading `PUBLIC_` variables from code that ships to the browser. The SDK inlines
+both into the same bundle, so treat any code path that reaches the client as safe only for
+`PUBLIC_` values.
+
+::: warning
+Because the value is inlined directly into the build command, values containing spaces are not
+currently supported and will break the build. Keep secrets and config values space-free (for
+example, use a single token rather than `Bearer <token>`).
+:::
