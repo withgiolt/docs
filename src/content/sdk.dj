@@ -85,7 +85,7 @@ pub fn main() {
 ```
 
 Run with `gleam run -m deploy`. `deploy.token_from_env` reads the named environment
-variable for authentication — it's the only place the SDK touches your environment.
+variable for authentication - it's the only place the SDK touches your environment.
 
 ## `{project}_dev.gleam`
 
@@ -116,8 +116,8 @@ pub fn main() {
 }
 ```
 
-Run with `gleam run -m {project}_dev`. `dev.watch` takes one or more directories to watch
-for changes; on a change, the configured `build` closure runs — call `dev.compile()`
+Run with `gleam dev`. `dev.watch` takes one or more directories to watch
+for changes; on a change, the configured `build` closure runs - call `dev.compile()`
 yourself as its first step to recompile your Gleam before re-bundling. The dev server
 then serves `static_dir`, hot-reloads the built `worker`, and (when `live_reload` is
 enabled) pushes browser reloads over SSE.
