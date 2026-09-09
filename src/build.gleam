@@ -1,4 +1,5 @@
 import docs/lib/markdown_renderer
+import docs/views/not_found
 import docs/views/page
 import envie
 import frontmatter
@@ -8,7 +9,6 @@ import gleam/list
 import gleam/option
 import gleam/result
 import gleam/string
-import lustre/element/html
 import lustre/ssg
 import simplifile
 import tailwind
@@ -97,12 +97,7 @@ fn build_static() {
         |> ssg.add_dynamic_route(dir, pages, page.element)
       },
     )
-    |> ssg.add_static_route(
-      "/404",
-      html.html([], [
-        html.script([], "window.location.replace(\"/\");"),
-      ]),
-    )
+    |> ssg.add_static_route("/404", not_found.element())
     |> ssg.add_static_dir("./public")
     |> ssg.build
     |> result.map_error(fn(e) { string.inspect(e) })
