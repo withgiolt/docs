@@ -58,7 +58,10 @@ jobs:
         with:
           script: |
             const marker = "<!-- preview-deployment-comment -->";
-            const body = `${marker}\n🔍 Preview deployment: ${{ steps.deploy.outputs.deployment-url }}`;
+            const previewUrl = ${{ toJSON(steps.deploy.outputs.deployment-url) }};
+            const body = previewUrl
+              ? `${marker}\n🔍 Preview deployment: ${previewUrl}`
+              : `${marker}\n⚠️ Wrangler didn't return a preview URL for this version. Cloudflare only starts generating Preview URLs for a Worker once its \`preview_urls\` setting has been synced by a full \`wrangler deploy\` — \`versions upload\` (used here) never syncs it. This repo's [\`Deploy\`](../actions/workflows/deploy.yml) workflow runs a full deploy on every push to \`main\`, so once a change enabling \`preview_urls\` lands there, previews should start appearing on later PRs.`;
 
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
