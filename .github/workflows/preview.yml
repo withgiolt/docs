@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   preview:
-    environment: Production
+    environment: Preview
     runs-on: ubuntu-latest
     permissions:
       contents: read
