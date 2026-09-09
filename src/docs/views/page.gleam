@@ -41,7 +41,7 @@ pub fn element(page: Page) {
             attribute.href(
               "https://github.com/withgiolt/docs/edit/main/src/content"
               <> page.current_path
-              <> ".dj",
+              <> ".md",
             ),
           ],
           [

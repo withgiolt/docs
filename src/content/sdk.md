@@ -122,6 +122,5 @@ yourself as its first step to recompile your Gleam before re-bundling. The dev s
 then serves `static_dir`, hot-reloads the built `worker`, and (when `live_reload` is
 enabled) pushes browser reloads over SSE.
 
-::: warning
-This page is still work in progress.
-:::
+> [!WARNING]
+> This page is still work in progress.

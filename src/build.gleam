@@ -1,4 +1,4 @@
-import docs/lib/djot_renderer
+import docs/lib/markdown_renderer
 import docs/views/page
 import envie
 import frontmatter
@@ -34,15 +34,15 @@ fn get_pages(dir: String) {
       _ -> Error(Nil)
     }
   })
-  |> list.filter(fn(file_path) { string.ends_with(file_path, ".dj") })
+  |> list.filter(fn(file_path) { string.ends_with(file_path, ".md") })
   |> list.map(fn(file_path) {
     let path =
       string.replace(file_path, directory <> "/", "")
-      |> string.replace(".dj", "")
+      |> string.replace(".md", "")
 
     let current_path =
       string.replace(file_path, "./src/content", "")
-      |> string.replace(".dj", "")
+      |> string.replace(".md", "")
       |> string.replace("index", "")
 
     let assert Ok(file_contents) = simplifile.read(file_path)
@@ -55,7 +55,7 @@ fn get_pages(dir: String) {
     }
       as "Failed to parse toml"
 
-    let parsed_content = djot_renderer.parse(extracted.content)
+    let parsed_content = markdown_renderer.parse(extracted.content)
 
     #(
       path,

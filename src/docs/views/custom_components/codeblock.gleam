@@ -1,7 +1,7 @@
 import gleam/option
-import jot
 import lustre/element
 import lustre/element/html
+import mork/document
 import smalto
 import smalto/grammar
 import smalto/languages/bash
@@ -28,5 +28,5 @@ pub fn container(language: option.Option(String), content: String) {
 
   let html = element.to_document_string(html.pre([], elements))
 
-  jot.RawBlock(html)
+  document.HtmlBlock(html)
 }

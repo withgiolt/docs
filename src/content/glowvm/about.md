@@ -8,10 +8,9 @@ GlowVM is Giolt's runtime for Gleam's Erlang target — [AtomVM](https://www.ato
 WebAssembly with WASI bindings, plus additional shims and NIFs to improve compatibility with `gleam_stdlib`
 and common OTP libraries.
 
-::: warning
-Giolt and GlowVM are work in progress and not yet published. The SDK, runtime and docs are all evolving
-— expect breaking changes. Not ready for production use.
-:::
+> [!WARNING]
+> Giolt and GlowVM are work in progress and not yet published. The SDK, runtime and docs are all evolving
+> — expect breaking changes. Not ready for production use.
 
 New to GlowVM? See [How to use GlowVM](/glowvm/how-to-use) for a walkthrough of packing and
 deploying an app.
@@ -38,16 +37,16 @@ full OTP / BEAM parity.
 See also upstream docs: [Differences between AtomVM and BEAM](https://doc.atomvm.org/latest/differences.html)
 and [Programmers Guide - Limitations](https://doc.atomvm.org/latest/programmers-guide.html).
 
-- *BEAM subset:* Not all BEAM opcodes and runtime features are implemented. Code hot-swapping, `on_load`
+- **BEAM subset:** Not all BEAM opcodes and runtime features are implemented. Code hot-swapping, `on_load`
   callbacks, tracing (`erlang:trace/3`, `dbg`), and distributed Erlang (`epmd`/`disterl`) are not supported.
   NIFs/ports written in C for regular OTP will not load.
-- *Types and binaries:*
+- **Types and binaries:**
   - Integers are 64-bit signed (no arbitrary-precision bignums). Overflows error rather than promoting.
   - Atoms are limited to 255 bytes.
   - Bitstring / binary matching with non-byte-aligned segments is limited — packing/unpacking arbitrary
     bit sizes, especially at boundaries, may fail when not aligned to 8 bits.
-- *No REPL / interactive shell.*
-- *Memory and performance:* Running compiled to WASM inside a JS host, constrained by linear memory and
+- **No REPL / interactive shell.**
+- **Memory and performance:** Running compiled to WASM inside a JS host, constrained by linear memory and
   host limits. Garbage collection and scheduling are AtomVM's, not OTP's — designed for request-scoped handlers,
   not long-running stateful schedulers.
 
@@ -56,38 +55,38 @@ and [Programmers Guide - Limitations](https://doc.atomvm.org/latest/programmers-
 AtomVM ships a minimal `stdlib`/`kernel`/`erts`. GlowVM adds shims for commonly used Gleam dependencies,
 but coverage is still partial.
 
-- *Missing modules/functions fail with* `undef` (`:undef` / `{error, undef}`) at runtime — e.g.
+- **Missing modules/functions fail with** `undef` (`:undef` / `{error, undef}`) at runtime — e.g.
   parts of `crypto`, `ssl`, `ets` (limited in AtomVM 0.6.x, improved in 0.7.0-alpha),
   `logger`, `rand`, `file`/`filelib`, and some `erlang` BIFs. Pure Gleam / pure Erlang libraries
   generally work; NIF-backed ones often don't.
-- *File system:* Only what WASI exposes is available and is sandboxed/ephemeral. No persistent
+- **File system:** Only what WASI exposes is available and is sandboxed/ephemeral. No persistent
   host paths across requests unless Giolt explicitly exposes them. Libraries that touch the
   OS/filesystem like `simplifile` or `envoy` may be stubbed or no-ops.
-- *OS processes:* `erlang:open_port({spawn, ...})`, `os:cmd/1` and similar are not available.
-- *Time and timers:* `timer`, `erlang:send_after/3`, `erlang:monotonic_time/0` etc. exist as
+- **OS processes:** `erlang:open_port({spawn, ...})`, `os:cmd/1` and similar are not available.
+- **Time and timers:** `timer`, `erlang:send_after/3`, `erlang:monotonic_time/0` etc. exist as
   a subset; precision is host-dependent.
 
 ### 3. WASI / hosting constraints
 
-- *WASI Preview 1:* GlowVM targets `wasi_snapshot_preview1` (`fd_write`, `random_get`, `clock_time_get`, sockets, etc.).
+- **WASI Preview 1:** GlowVM targets `wasi_snapshot_preview1` (`fd_write`, `random_get`, `clock_time_get`, sockets, etc.).
   Availability and behavior depend on Giolt's WASI implementation.
-- *Networking:* TCP/UDP via WASI sockets only where exposed. HTTP clients (`gleam/http`, `mint`, `hackney`, `httpc`)
+- **Networking:** TCP/UDP via WASI sockets only where exposed. HTTP clients (`gleam/http`, `mint`, `hackney`, `httpc`)
   may need GlowVM-specific adapters and will be limited by the host's fetch/socket policy.
-- *Request-scoped execution:* Handlers are short-lived. Background processes or `receive` loops that outlive
+- **Request-scoped execution:** Handlers are short-lived. Background processes or `receive` loops that outlive
   the request, and global ETS tables, do not persist across requests. Design handlers as stateless request -> response
   and use an external store (DB, KV) for persistence.
-- *Bundle size and cold start:* The `.wasm` runtime plus your `.avm` ships with your app.
+- **Bundle size and cold start:** The `.wasm` runtime plus your `.avm` ships with your app.
   Large BEAM packs increase cold start time and may hit size limits.
-- *No hardware APIs:* AtomVM's GPIO/I2C/SPI/UART/NVS/LEDC peripherals are not exposed in GlowVM.
+- **No hardware APIs:** AtomVM's GPIO/I2C/SPI/UART/NVS/LEDC peripherals are not exposed in GlowVM.
 
 ### Practical guidance for Gleam apps
 
-- *Prefer pure Gleam / pure Erlang dependencies.* Libraries with NIFs or heavy `crypto`/`ssl` usage
+- **Prefer pure Gleam / pure Erlang dependencies.** Libraries with NIFs or heavy `crypto`/`ssl` usage
   are most likely to hit missing symbols.
-- *Test on GlowVM early:* `gleam build` succeeding does not guarantee runtime success. Run the pack
+- **Test on GlowVM early:** `gleam build` succeeding does not guarantee runtime success. Run the pack
   under GlowVM and watch for `undef` or `badarg` at startup.
-- *Keep packs small:* Only include needed BEAM modules.
-- *Assume statelessness:* Don't rely on process registry or ETS for cross-request state.
+- **Keep packs small:** Only include needed BEAM modules.
+- **Assume statelessness:** Don't rely on process registry or ETS for cross-request state.
 
 GlowVM's compatibility layer is expanding. As shims land, previously unsupported stdlib calls will start
 working without code changes — just rebuild your pack.
@@ -96,19 +95,19 @@ working without code changes — just rebuild your pack.
 
 GlowVM is early. Roughly in priority order:
 
-- *Publish to Hex.* GlowVM is currently only usable as a `path`/git dependency; a tagged Hex release
+- **Publish to Hex.** GlowVM is currently only usable as a `path`/git dependency; a tagged Hex release
   is the next milestone.
-- *Track AtomVM* `0.7.0` *stable.* GlowVM currently pins `vendor/AtomVM` to `v0.7.0-alpha.1` for its
+- **Track AtomVM** `0.7.0` **stable.** GlowVM currently pins `vendor/AtomVM` to `v0.7.0-alpha.1` for its
   improved `ets` support; it will move to the stable `0.7.0` tag once released.
-- *Wider stdlib/OTP coverage.* Closing `undef` gaps in `crypto`, `logger`, `rand`, and `file`/`filelib`
+- **Wider stdlib/OTP coverage.** Closing `undef` gaps in `crypto`, `logger`, `rand`, and `file`/`filelib`
   shims is ongoing, driven by what real Gleam dependencies need.
-- *Async host calls.* A JS-Promise-Integration-based bridge for calling back out to the host runtime
+- **Async host calls.** A JS-Promise-Integration-based bridge for calling back out to the host runtime
   (e.g. `fetch` from within a handler) is being explored, so handlers aren't limited to synchronous,
   request-scoped work. Note: this differs from `elixir-workers` implementation as that uses a
   2 pass system, while GlowVM will directly pause the runtime to do work and resumes when done.
-- *Smaller cold starts.* Reducing the shipped `glowvm.wasm` size and packed BEAM footprint to cut
+- **Smaller cold starts.** Reducing the shipped `glowvm.wasm` size and packed BEAM footprint to cut
   cold-start latency.
-- *Broader WASI host support.* Cloudflare Workers is the primary target today; other WASI-compliant
+- **Broader WASI host support.** Cloudflare Workers is the primary target today; other WASI-compliant
   JS runtimes (Deno Deploy and similar) are being validated as they come up.
 
 Have a use case that needs something not listed here? Open an issue on

@@ -29,6 +29,5 @@ containing the entrypoint to your app.
 
 [Read the full Giolt SDK reference](/sdk)
 
-::: warning
-This page is still work in progress.
-:::
+> [!WARNING]
+> This page is still work in progress.

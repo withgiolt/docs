@@ -7,9 +7,8 @@ title = "How to use GlowVM"
 This page walks through packing a Gleam (Erlang target) app with GlowVM and running it on a WASI host
 such as a Cloudflare Worker.
 
-::: warning
-GlowVM is experimental and not yet published to Hex. Requires macOS or Linux to build.
-:::
+> [!WARNING]
+> GlowVM is experimental and not yet published to Hex. Requires macOS or Linux to build.
 
 ## 1. Add the dependency
 
