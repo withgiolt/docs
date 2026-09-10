@@ -42,7 +42,7 @@ import giolt_sdk/bundle
 
 pub fn main() {
   bundle.new()
-  |> bundle.entry("app")
+  |> bundle.entry("./build/dev/javascript/app/app.mjs")
   |> bundle.static_dir("./public")
   |> bundle.outdir("./dist")
   |> bundle.run
@@ -55,6 +55,11 @@ There is nothing to configure about the bundle itself — Giolt produces one sha
 artifact: a minified, tree-shaken ESM bundle wrapped in the platform's worker entry.
 `bundle.run` reads your already-compiled JavaScript output; it does not run
 `gleam build` for you, so compile your project first.
+
+`bundle.entry` takes a **path to a JavaScript file**, not a Gleam module name. That
+is usually your compiled Gleam entry module, but it can be any JavaScript file — including
+one you have already run your own esbuild over, which Giolt then bundles again to adapt
+it to the platform.
 
 Your entry module needs to export a single function:
 
@@ -92,7 +97,6 @@ variable for authentication - it's the only place the SDK touches your environme
 ```gleam
 import giolt_sdk/bundle
 import giolt_sdk/dev
-import gleam/result
 
 pub fn main() {
   dev.new()
@@ -100,10 +104,8 @@ pub fn main() {
   |> dev.watch("./public")
   |> dev.prebuild(fn() { Ok(Nil) })
   |> dev.build(fn(_change) {
-    use _ <- result.try(dev.compile())
-
     bundle.new()
-    |> bundle.entry("app")
+    |> bundle.entry("./build/dev/javascript/app/app.mjs")
     |> bundle.static_dir("./public")
     |> bundle.run
     |> bundle.discard_output
@@ -116,11 +118,33 @@ pub fn main() {
 }
 ```
 
-Run with `gleam dev`. `dev.watch` takes one or more directories to watch
-for changes; on a change, the configured `build` closure runs - call `dev.compile()`
-yourself as its first step to recompile your Gleam before re-bundling. The dev server
-then serves `static_dir`, hot-reloads the built `worker`, and (when `live_reload` is
-enabled) pushes browser reloads over SSE.
+Run with `gleam dev`. `dev.watch` takes one or more directories to watch for changes.
+The dev server serves `static_dir`, hot-reloads the built `worker`, and (when
+`live_reload` is enabled) pushes browser reloads over SSE.
+
+### How the dev loop restarts
+
+`dev.run` supervises itself. The first process compiles your project, then spawns a
+child that runs `prebuild`, your `build` closure, the watcher and the server. When a
+watched file changes, the child exits, the parent recompiles, and a fresh child starts.
+
+That restart is the point. A long-lived process holds its imported modules in memory,
+so a `build` closure that generates output **in-process** — a static site generator,
+codegen, templating — would otherwise keep rendering from the code that was loaded when
+the process started, even after your Gleam had been recompiled on disk. Steps that shell
+out (esbuild, Tailwind) never had that problem, so the symptom was a confusing one:
+generated pages stale while worker-rendered routes updated fine. Restarting means your
+`build` closure always runs against freshly compiled code.
+
+Because the supervisor compiles before every child, your `build` closure does not need
+to compile the project itself. There is no `dev.compile` — it was removed in **3.0.0**.
+If you are upgrading, drop the `use _ <- result.try(dev.compile())` line (and the
+`gleam/result` import, if that was its only use).
+
+> [!NOTE]
+> Running the dev loop under Deno (`gleam run --runtime deno`) needs permissions for
+> spawning subprocesses and reading and writing files. The simplest setup is
+> `[javascript.deno]` with `allow_all = true` in your `gleam.toml`.
 
 > [!WARNING]
 > This page is still work in progress.
