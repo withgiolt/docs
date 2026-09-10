@@ -122,29 +122,5 @@ Run with `gleam dev`. `dev.watch` takes one or more directories to watch for cha
 The dev server serves `static_dir`, hot-reloads the built `worker`, and (when
 `live_reload` is enabled) pushes browser reloads over SSE.
 
-### How the dev loop restarts
-
-`dev.run` supervises itself. The first process compiles your project, then spawns a
-child that runs `prebuild`, your `build` closure, the watcher and the server. When a
-watched file changes, the child exits, the parent recompiles, and a fresh child starts.
-
-That restart is the point. A long-lived process holds its imported modules in memory,
-so a `build` closure that generates output **in-process** — a static site generator,
-codegen, templating — would otherwise keep rendering from the code that was loaded when
-the process started, even after your Gleam had been recompiled on disk. Steps that shell
-out (esbuild, Tailwind) never had that problem, so the symptom was a confusing one:
-generated pages stale while worker-rendered routes updated fine. Restarting means your
-`build` closure always runs against freshly compiled code.
-
-Because the supervisor compiles before every child, your `build` closure does not need
-to compile the project itself. There is no `dev.compile` — it was removed in **3.0.0**.
-If you are upgrading, drop the `use _ <- result.try(dev.compile())` line (and the
-`gleam/result` import, if that was its only use).
-
-> [!NOTE]
-> Running the dev loop under Deno (`gleam run --runtime deno`) needs permissions for
-> spawning subprocesses and reading and writing files. The simplest setup is
-> `[javascript.deno]` with `allow_all = true` in your `gleam.toml`.
-
 > [!WARNING]
 > This page is still work in progress.
