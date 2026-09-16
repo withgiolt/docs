@@ -54,8 +54,8 @@ pub fn element(
   children children: List(Element(Nil)),
 ) {
   let formatted_title = case title {
-    "Giolt Docs" -> "Giolt Docs — Hosting for Gleam"
-    title -> title <> " — Giolt Docs"
+    "Giolt Docs" -> "Giolt Docs - Hosting for Gleam"
+    title -> title <> " - Giolt Docs"
   }
 
   html.html([attribute.lang("en")], [
