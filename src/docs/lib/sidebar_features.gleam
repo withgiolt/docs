@@ -20,6 +20,9 @@ pub fn get_sidebar_features(current_path: String) {
       SidebarLink("Get started", "/get-started", False, current_path:),
       SidebarLink("SDK", "/sdk", False, current_path:),
     ]),
+    SidebarDropdown("API", [
+      SidebarLink("About API", "/api/about", False, current_path:),
+    ]),
     SidebarDropdown("GlowVM - EXPERIMENTAL", [
       SidebarLink("About GlowVM", "/glowvm/about", False, current_path:),
       SidebarLink("How to use", "/glowvm/how-to-use", False, current_path:),
