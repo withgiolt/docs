@@ -3,7 +3,7 @@ default:
 
 # Build, watch and serve the site on http://localhost:3000
 dev:
-    NODE_ENV=development gleam dev
+    gleam dev
 
 check:
     gleam check
