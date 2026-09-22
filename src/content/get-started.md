@@ -165,12 +165,15 @@ gleam run -m deploy
 ```
 
 `deploy.from(output)` chains directly off the `bundle.Output` your build produced, so
-this always ships exactly what you just built. Set `deploy.preview(True)` while you're
-testing a change to deploy without touching production.
+this always ships exactly what you just built. Every deploy ships straight to
+production — there's no preview mode yet (see [Limits](/limits)).
+
+Your project is live at `<slug>.giolt.app`; custom domains aren't supported yet.
 
 ## Next steps
 
 - [Giolt SDK reference](/sdk) — every builder, every setter, and what each one
   defaults to.
+- [Limits](/limits) — what isn't supported yet, and the account limits that apply.
 - [Report an issue](https://github.com/withgiolt/issues) if something's broken,
   confusing, or missing.

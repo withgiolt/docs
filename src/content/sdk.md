@@ -81,6 +81,9 @@ That contract is checked at request time inside the generated worker shim, not b
 scanning the entry file, so it works no matter how the export got there — including
 through your own esbuild pass.
 
+Deployed Workers carry no bindings — no env vars, no KV/D1/R2, no secrets. See
+[Limits](/limits) for this and everything else not supported yet.
+
 ## `giolt_sdk/dev`
 
 ```gleam
@@ -145,7 +148,7 @@ pub fn main() {
 
   deploy.new()
   |> deploy.from(output)
-  |> deploy.preview(True)
+  |> deploy.preview(False)
   |> deploy.token_from_env("GIOLT_TOKEN")
   |> deploy.run
   |> promise.map(deploy.print_result)
@@ -156,9 +159,12 @@ Run with `gleam run -m deploy`.
 
 - **`deploy.from(output)`** / **`deploy.artifact(path)`** — exactly one required.
   `deploy.from` deploys the `bundle.Output` from a `bundle.run` call directly;
-  `deploy.artifact` deploys an already-built directory instead.
-- **`deploy.preview(bool)`** — optional, defaults to `False`. Deploy as a preview
-  instead of production.
+  `deploy.artifact` deploys an already-built directory instead. Module paths starting
+  with `__giolt` are reserved and rejected — the platform's own metering shim uses
+  that prefix.
+- **`deploy.preview(bool)`** — optional, defaults to `False`. **Not implemented yet** —
+  `True` is rejected with a 400 ("Preview deployments aren't supported yet."). See
+  [Limits](/limits).
 - **`deploy.token_from_env(var)`** — optional, defaults to `"GIOLT_TOKEN"`. Read the
   deploy token from the named environment variable.
 - **`deploy.token(value)`** — optional. Pass the deploy token directly instead of
@@ -167,47 +173,29 @@ Run with `gleam run -m deploy`.
 - **`deploy.api_url(url)`** — optional, defaults to `https://giolt.com`. Also
   overridable via the `GIOLT_API_URL` environment variable, which takes precedence.
 
-<<<<<<< HEAD
+`deploy.token_from_env` (or the environment variable it names) is the one place the SDK
+reads your environment — there's no `.env` loading or general env-var handling
+elsewhere in the SDK.
 
-```gleam
-import giolt_sdk/bundle
-import giolt_sdk/dev
+### Static (assets-only) deploys
 
-pub fn main() {
-  dev.new()
-  |> dev.watch("./src")
-  |> dev.watch("./public")
-  |> dev.prebuild(fn() { Ok(Nil) })
-  |> dev.build(fn(_change) {
-    bundle.new()
-    |> bundle.entry("./build/dev/javascript/app/app.mjs")
-    |> bundle.static_dir("./public")
-    |> bundle.run
-    |> bundle.discard_output
-  })
-  |> dev.serve(port: 3000)
-  |> dev.worker("./dist/index.mjs")
-  |> dev.static_dir("./public")
-  |> dev.live_reload(True)
-  |> dev.run
-}
-```
+Both `deploy.from` and `deploy.artifact` split the artifact directory the same way:
+everything under `<dir>/static/` uploads as a static asset, everything else uploads as
+a Worker module. If nothing lands outside `static/`, Giolt deploys it as assets-only —
+no Worker script, no compute, requests served straight off Cloudflare's CDN, and no
+usage billed (there's no `fetch` handler for the request meter to hook into).
 
-Run with `gleam dev`. `dev.watch` takes one or more directories to watch for changes.
-The dev server serves `static_dir`, hot-reloads the built `worker`, and (when
-`live_reload` is enabled) pushes browser reloads over SSE.
-
-> [!WARNING]
-> This page is still work in progress.
-> \=======
-> `deploy.token_from_env` (or the environment variable it names) is the one place the SDK
-> reads your environment — there's no `.env` loading or general env-var handling
-> elsewhere in the SDK.
+`bundle`'s `static_dir` already places things correctly for you — anything you point it
+at ends up under `static/` in the output, and `bundle.entry` always adds a module
+outside it. If you instead call `deploy.artifact(path)` on a directory you built
+yourself (a static site generator's output, say), the same rule applies but you have to
+arrange it: put everything under `<path>/static/` and leave nothing at the top level.
+Anything outside `static/` becomes a module, and unless it's named `index.mjs` the
+deploy is rejected — including leftover files from a previous build layout, so clear
+the directory before rebuilding if you change where your build writes to.
 
 ## Next steps
 
 - [Get started](/get-started) for a full walkthrough from a new project.
 - [Report an issue](https://github.com/withgiolt/issues) if something's broken or
   missing.
-
-> > > > > > > 0c23f01 (Updated documentation)

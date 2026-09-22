@@ -3,7 +3,6 @@ import docs/views/not_found
 import docs/views/page
 import envie
 import frontmatter
-import giolt_sdk/bundle
 import gleam/dict
 import gleam/io
 import gleam/list
