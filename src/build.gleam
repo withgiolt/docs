@@ -3,6 +3,7 @@ import docs/views/not_found
 import docs/views/page
 import envie
 import frontmatter
+import giolt_sdk/bundle
 import gleam/dict
 import gleam/io
 import gleam/list
@@ -14,9 +15,30 @@ import simplifile
 import tailwind
 import tom
 
-pub fn main() {
-  build_static()
-  build_css()
+/// Where the generated site is assembled. It is deliberately not `./dist`:
+/// `bundle.run` wipes its outdir on every build, so anything written there
+/// before bundling would be thrown away.
+const static_dir = "./build/tmp/static"
+
+/// The compiled worker entry. `src/docs.gleam` exports the `handler` the
+/// Giolt runtime calls for requests that match no static file.
+const worker_entry = "./build/dev/javascript/docs/docs.mjs"
+
+const outdir = "./dist"
+
+/// Crashes on failure so `just build` and `just deploy` stop rather than
+/// shipping a half-built site. Callers that want to handle the error
+/// themselves — the dev server does — should use `build_all` instead.
+pub fn main() -> bundle.Output {
+  let assert Ok(output) = build_all() as "Build failed"
+  output
+}
+
+/// Builds the whole site: static pages, CSS, then the deployable bundle.
+pub fn build_all() -> Result(bundle.Output, String) {
+  use _ <- result.try(build_static())
+  use _ <- result.try(build_css())
+  build_worker()
 }
 
 fn get_pages(dir: String) {
@@ -84,12 +106,13 @@ fn get_content_dirs() {
   |> list.map(fn(dir) { "/" <> dir })
 }
 
-fn build_static() {
+fn build_static() -> Result(Nil, String) {
   let root_pages = get_pages("")
   let build =
     get_content_dirs()
     |> list.fold(
-      ssg.new("./dist") |> ssg.add_dynamic_route("/", root_pages, page.element),
+      ssg.new(static_dir)
+        |> ssg.add_dynamic_route("/", root_pages, page.element),
       fn(build, dir) {
         let pages = get_pages(dir)
 
@@ -103,15 +126,24 @@ fn build_static() {
     |> result.map_error(fn(e) { string.inspect(e) })
 
   case build {
-    Ok(_) -> io.println("Build succeeded!")
-    Error(e) -> {
-      echo e
-      io.println("Build failed!")
+    Ok(_) -> {
+      io.println("Static pages built successfully")
+      Ok(Nil)
     }
+    Error(e) -> Error("Failed to build static pages: " <> e)
   }
 }
 
-fn build_css() {
+fn build_worker() -> Result(bundle.Output, String) {
+  bundle.new()
+  |> bundle.entry(worker_entry)
+  |> bundle.static_dir(static_dir)
+  |> bundle.outdir(outdir)
+  |> bundle.run
+  |> result.map_error(bundle.describe_error)
+}
+
+fn build_css() -> Result(Nil, String) {
   let is_dev = envie.get_string("NODE_ENV", "production") == "development"
 
   let result =
@@ -119,7 +151,7 @@ fn build_css() {
       "-i",
       "./src/docs.css",
       "-o",
-      "./dist/docs.css",
+      static_dir <> "/docs.css",
       ..case is_dev {
         True -> []
         False -> ["--minify"]
@@ -127,10 +159,10 @@ fn build_css() {
     ])
 
   case result {
-    Ok(_) -> io.println("CSS built successfully")
-    Error(e) -> {
-      echo e
-      panic as "Failed to build CSS"
+    Ok(_) -> {
+      io.println("CSS built successfully")
+      Ok(Nil)
     }
+    Error(e) -> Error("Failed to build CSS: " <> string.inspect(e))
   }
 }
