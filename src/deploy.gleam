@@ -7,8 +7,6 @@ import gleam/javascript/promise.{type Promise}
 
 const token_var = "GIOLT_TOKEN"
 
-const project_id_var = "GIOLT_PROJECT_ID"
-
 /// The SDK defaults to `https://giolt.com`, but `/api/deploy` is served by
 /// the dash worker. `GIOLT_API_URL` still wins over this — the SDK reads it
 /// itself and takes it in preference to whatever is set here.
@@ -20,7 +18,6 @@ pub fn main() -> Promise(Nil) {
   let output = build.main()
 
   deploy.new()
-  |> deploy.project_id(envie.get_string(project_id_var, ""))
   |> deploy.from(output)
   |> deploy.token_from_env(token_var)
   |> deploy.api_url(api_url)

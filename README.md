@@ -61,9 +61,9 @@ preview deployments yet.
 `src/deploy.gleam` is the builder chain from [/sdk](https://docs.giolt.com/sdk),
 configured from the environment:
 
-- `GIOLT_TOKEN` — the project's deploy key from the Giolt dashboard. In CI it
-  comes from the `GIOLT_TOKEN` repository secret; locally a `.env` works.
-- `GIOLT_PROJECT_ID` — the project id.
+- `GIOLT_TOKEN` — the project's deploy key from the Giolt dashboard; the key
+  already resolves to exactly one project, so no project id is needed. In CI
+  it comes from the `GIOLT_TOKEN` repository secret; locally a `.env` works.
 - `GIOLT_API_URL` — the API to deploy against. `src/deploy.gleam` passes
   `https://dash.giolt.com`, which is where `/api/deploy` is served; the SDK
   defaults to `https://giolt.com` and reads this variable in preference to

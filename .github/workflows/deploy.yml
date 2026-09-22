@@ -46,4 +46,3 @@ jobs:
         run: just deploy
         env:
           GIOLT_TOKEN: ${{ secrets.GIOLT_TOKEN }}
-          GIOLT_PROJECT_ID: ${{ vars.GIOLT_PROJECT_ID }}
