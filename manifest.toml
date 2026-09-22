@@ -16,7 +16,7 @@ packages = [
   { name = "exception", version = "2.1.1", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "exception", source = "hex", outer_checksum = "6BDEA95248093599391C3B5DF1835C5C6A86C353C2F99CE539B450E3432FE117" },
   { name = "filepath", version = "1.1.2", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "filepath", source = "hex", outer_checksum = "B06A9AF0BF10E51401D64B98E4B627F1D2E48C154967DA7AF4D0914780A6D40A" },
   { name = "frontmatter", version = "1.0.1", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "frontmatter", source = "hex", outer_checksum = "D7FF83A8D22A52867809681EE254A3F989169F92539299958879FE47737DAB7A" },
-  { name = "giolt_sdk", version = "2.0.7", build_tools = ["gleam"], requirements = ["conversation", "filepath", "gleam_javascript", "gleam_regexp", "gleam_stdlib", "simplifile"], otp_app = "giolt_sdk", source = "hex", outer_checksum = "452B6A8C90F01E065461D1B4FD34074239216BE09E12E9A1B0D67DE1E78E57C5" },
+  { name = "giolt_sdk", version = "2.1.0", build_tools = ["gleam"], requirements = ["conversation", "envie", "filepath", "gleam_fetch", "gleam_http", "gleam_javascript", "gleam_json", "gleam_regexp", "gleam_stdlib", "simplifile"], otp_app = "giolt_sdk", source = "hex", outer_checksum = "E93A4C636F38F96081D6B7A8E5FB47E654179AB0B8BEEDD15670EB4389A9B52A" },
   { name = "glailglind", version = "2.3.0", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_http", "gleam_httpc", "gleam_stdlib", "shellout", "simplifile", "tom"], otp_app = "glailglind", source = "hex", outer_checksum = "734B8103529D9406B970C707D077CA6B45FD566295F0E72E209C23740734AC78" },
   { name = "glam", version = "2.0.4", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "glam", source = "hex", outer_checksum = "48A043A12091F93D911C316DD8F7FFD03CD9FF6F50848FC56E359D3C168DF0FA" },
   { name = "gleam_community_ansi", version = "1.5.0", build_tools = ["gleam"], requirements = ["gleam_community_colour", "gleam_regexp", "gleam_stdlib"], otp_app = "gleam_community_ansi", source = "hex", outer_checksum = "B5AA433AF84313E23FDF90CCFF752B9380FE9FFCE02B2949D49B7AACCC77B16D" },
@@ -57,7 +57,7 @@ conversation = { version = ">= 2.0.2 and < 3.0.0" }
 envie = { version = ">= 1.2.0 and < 2.0.0" }
 esgleam = { git = "https://github.com/withgiolt/esgleam", ref = "5960117" }
 frontmatter = { version = ">= 1.0.1 and < 2.0.0" }
-giolt_sdk = { version = ">= 2.0.7 and < 3.0.0" }
+giolt_sdk = { version = ">= 2.1.0 and < 3.0.0" }
 glailglind = { version = ">= 2.3.0 and < 3.0.0" }
 gleam_fetch = { version = ">= 1.4.1 and < 2.0.0" }
 gleam_http = { version = ">= 4.3.0 and < 5.0.0" }

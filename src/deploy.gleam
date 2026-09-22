@@ -9,11 +9,10 @@ const token_var = "GIOLT_TOKEN"
 
 const project_id_var = "GIOLT_PROJECT_ID"
 
-const api_url_var = "GIOLT_API_URL"
-
-/// The deploy endpoint lives on the dash worker, not on giolt.com — that is
-/// where the routes authenticated by a project's deploy key are served.
-const default_api_url = "https://dash.giolt.com"
+/// The SDK defaults to `https://giolt.com`, but `/api/deploy` is served by
+/// the dash worker. `GIOLT_API_URL` still wins over this — the SDK reads it
+/// itself and takes it in preference to whatever is set here.
+const api_url = "https://dash.giolt.com"
 
 pub fn main() -> Promise(Nil) {
   let _ = envie.load()
@@ -24,7 +23,7 @@ pub fn main() -> Promise(Nil) {
   |> deploy.project_id(envie.get_string(project_id_var, ""))
   |> deploy.from(output)
   |> deploy.token_from_env(token_var)
-  |> deploy.api_url(envie.get_string(api_url_var, default_api_url))
+  |> deploy.api_url(api_url)
   |> deploy.run
   |> promise.map(fn(result) {
     deploy.print_result(result)

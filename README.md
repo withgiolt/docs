@@ -64,14 +64,10 @@ configured from the environment:
 - `GIOLT_TOKEN` — the project's deploy key from the Giolt dashboard. In CI it
   comes from the `GIOLT_TOKEN` repository secret; locally a `.env` works.
 - `GIOLT_PROJECT_ID` — the project id.
-- `GIOLT_API_URL` — the API to deploy against, defaulting to
-  `https://dash.giolt.com`. Useful when running against a local Giolt.
-
-> Deploys do not go out yet. `giolt_sdk/deploy` builds a plan and then returns
-> `NotImplemented` — "giolt_sdk/deploy does not talk to the Giolt API yet." — so
-> `just deploy` fails there. Everything up to that point works: the bundle is
-> built and the plan is complete. The deploy API itself is live and takes the
-> deploy key as a bearer token at `POST /api/deploy`.
+- `GIOLT_API_URL` — the API to deploy against. `src/deploy.gleam` passes
+  `https://dash.giolt.com`, which is where `/api/deploy` is served; the SDK
+  defaults to `https://giolt.com` and reads this variable in preference to
+  either. Useful when running against a local Giolt.
 
 Found a bug or have a request? File it in
 [withgiolt/issues](https://github.com/withgiolt/issues), the central issue
