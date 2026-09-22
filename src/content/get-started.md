@@ -134,14 +134,14 @@ a watched file.
 
 ## 6. Deploy it
 
-Grab a deploy token and your project id from the [Giolt dashboard](https://giolt.com),
-then export the token:
+Grab a deploy token from the [Giolt dashboard](https://giolt.com) — it already
+resolves to exactly one project, so there's no project id to set — then export it:
 
 ```sh
 export GIOLT_TOKEN=your_token_here
 ```
 
-Set your project id in the scaffolded `deploy.gleam`, then run it:
+Run the scaffolded `deploy.gleam`:
 
 ```gleam
 import build
@@ -152,7 +152,6 @@ pub fn main() {
   let assert Ok(output) = build.main()
 
   deploy.new()
-  |> deploy.project_id("prj_replace_me")
   |> deploy.from(output)
   |> deploy.preview(False)
   |> deploy.token_from_env("GIOLT_TOKEN")

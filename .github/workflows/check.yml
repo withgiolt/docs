@@ -1,14 +1,14 @@
-name: Deploy
+name: Check
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  pull_request:
+
+concurrency:
+  group: check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    environment: Production
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -42,7 +42,8 @@ jobs:
           gleam deps download
           deno ci
 
-      - name: Build & Deploy
-        run: just deploy
-        env:
-          GIOLT_TOKEN: ${{ secrets.GIOLT_TOKEN }}
+      - name: Check
+        run: just check
+
+      - name: Build
+        run: just build

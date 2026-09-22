@@ -144,7 +144,6 @@ pub fn main() {
   let assert Ok(output) = build.main()
 
   deploy.new()
-  |> deploy.project_id("prj_replace_me")
   |> deploy.from(output)
   |> deploy.preview(True)
   |> deploy.token_from_env("GIOLT_TOKEN")
@@ -155,7 +154,6 @@ pub fn main() {
 
 Run with `gleam run -m deploy`.
 
-- **`deploy.project_id(id)`** — required. Your Giolt project id.
 - **`deploy.from(output)`** / **`deploy.artifact(path)`** — exactly one required.
   `deploy.from` deploys the `bundle.Output` from a `bundle.run` call directly;
   `deploy.artifact` deploys an already-built directory instead.
