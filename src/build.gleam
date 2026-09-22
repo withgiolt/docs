@@ -15,30 +15,21 @@ import simplifile
 import tailwind
 import tom
 
-/// Where the generated site is assembled. It is deliberately not `./dist`:
-/// `bundle.run` wipes its outdir on every build, so anything written there
-/// before bundling would be thrown away.
-const static_dir = "./build/tmp/static"
-
-/// The compiled worker entry. `src/docs.gleam` exports the `handler` the
-/// Giolt runtime calls for requests that match no static file.
-const worker_entry = "./build/dev/javascript/docs/docs.mjs"
-
-const outdir = "./dist"
+const static_dir = "./dist/static"
 
 /// Crashes on failure so `just build` and `just deploy` stop rather than
 /// shipping a half-built site. Callers that want to handle the error
 /// themselves — the dev server does — should use `build_all` instead.
-pub fn main() -> bundle.Output {
-  let assert Ok(output) = build_all() as "Build failed"
-  output
+pub fn main() -> Nil {
+  let assert Ok(_) = build_all() as "Build failed"
+  Nil
 }
 
 /// Builds the whole site: static pages, CSS, then the deployable bundle.
-pub fn build_all() -> Result(bundle.Output, String) {
+pub fn build_all() -> Result(Nil, String) {
   use _ <- result.try(build_static())
   use _ <- result.try(build_css())
-  build_worker()
+  Ok(Nil)
 }
 
 fn get_pages(dir: String) {
@@ -132,15 +123,6 @@ fn build_static() -> Result(Nil, String) {
     }
     Error(e) -> Error("Failed to build static pages: " <> e)
   }
-}
-
-fn build_worker() -> Result(bundle.Output, String) {
-  bundle.new()
-  |> bundle.entry(worker_entry)
-  |> bundle.static_dir(static_dir)
-  |> bundle.outdir(outdir)
-  |> bundle.run
-  |> result.map_error(bundle.describe_error)
 }
 
 fn build_css() -> Result(Nil, String) {
