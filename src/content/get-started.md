@@ -4,49 +4,37 @@ title = "Get started"
 
 # Get started
 
-This walks through taking a Gleam project from nothing to deployed on Giolt: install the
-SDK, scaffold your build/dev/deploy scripts, write a handler, run it locally, and ship
-it.
+This walks through taking a Gleam project from nothing to deployed on Giolt: add the
+`giolt` CLI, write a handler, build it, run it locally, and ship it.
 
 ## Prerequisites
 
-- [Gleam](https://gleam.run) installed.
-- A Gleam project targeting `javascript` (Giolt has no Erlang support yet). If you don't
-  have one, create one with:
+- [Gleam](https://gleam.run) and [Bun](https://bun.sh) installed.
+- A Gleam project targeting `javascript`. If you don't have one, create one with:
 
   ```sh
   gleam new my_app
   cd my_app
   ```
 
-## 1. Add the SDK
+  Projects targeting `erlang` build for [GlowVM](/glowvm/about) instead; see
+  [How to use GlowVM](/glowvm/how-to-use).
+
+## 1. Add the CLI
 
 ```sh
-gleam add giolt_sdk
+gleam add --dev giolt
 ```
 
-`giolt_sdk` is a library, not a CLI — it has no commands of its own beyond a one-shot
-scaffolder. You write plain Gleam scripts that call into it, and you own your own build.
-
-## 2. Scaffold your scripts
+`giolt` has no scripts to scaffold. You run it with `gleam run -m giolt <command>` and
+configure it, if you need to, under `[tools.giolt]` in your `gleam.toml`. Add
+`--runtime bun` to run it on Bun:
 
 ```sh
-gleam run -m giolt_sdk/init
+gleam run --runtime bun -m giolt --help
 ```
 
-This reads your project name out of `gleam.toml` and writes three files into `src/`,
-skipping any that already exist:
-
-- **`build.gleam`** — bundles your app for the Giolt platform.
-- **`deploy.gleam`** — ships a bundle to Giolt.
-- **`{project}_dev.gleam`** — watches, rebuilds and serves your app locally.
-
-Each is a short script that chains a builder from one of the SDK's three public
-modules — `giolt_sdk/bundle`, `giolt_sdk/deploy`, `giolt_sdk/dev` — and finishes with
-`run`. You're free to edit any of them afterwards; nothing about them is generated
-again or overwritten.
-
-## 3. Write a handler
+## 2. Write a handler
 
 Handlers speak [`conversation`](https://hexdocs.pm/conversation) types, so add it to
 your project:
@@ -55,14 +43,16 @@ your project:
 gleam add conversation
 ```
 
-Giolt expects your compiled entry module to export a single `handler` function:
+Giolt expects your entry module to export a single `handle` function. The entry module
+defaults to your package's own module, so for a project named `my_app` that is
+`src/my_app.gleam`:
 
 ```gleam
 import conversation
 import gleam/http/request.{type Request}
 import gleam/http/response.{type Response}
 
-pub fn handler(
+pub fn handle(
   _request: Request(conversation.RequestBody),
 ) -> Response(conversation.ResponseBody) {
   response.new(200)
@@ -73,79 +63,47 @@ pub fn handler(
 Use these types exactly. A plain `String` body compiles, but the worker serves only its
 first character.
 
-`handler` can also return a `Promise(Response(conversation.ResponseBody))` if you need to do async work
+`handle` can also return a `Promise(Response(conversation.ResponseBody))` if you need to do async work
 (a database call, an outbound fetch) before responding.
 
-## 4. Build it
+If your main module already has an unrelated `handle`, point Giolt at another module:
 
-Compile your project for the JavaScript target, then run the scaffolded build script:
+```toml
+[tools.giolt]
+entry = "my_app/server"
+```
+
+## 3. Build it
 
 ```sh
-gleam build --target javascript
-gleam run -m build
+gleam run --runtime bun -m giolt build
 ```
 
-`build.gleam` looks like this out of the box:
+`giolt build` checks `handle` against your project's package interface first. If it is
+missing, still named `handler`, or has the wrong type, the build stops and prints the
+type it expected and the one it found. Then it compiles your project and writes
+`./dist`: a minified, tree-shaken ESM bundle wrapped in the platform's worker entry.
 
-```gleam
-import giolt_sdk/bundle
+To ship static files, put them in a directory and name it:
 
-pub fn main() {
-  bundle.new()
-  |> bundle.entry("./build/dev/javascript/my_app/my_app.mjs")
-  |> bundle.static_dir("./public")
-  |> bundle.outdir("./dist")
-  |> bundle.run
-}
+```toml
+[tools.giolt]
+assets = "public"
 ```
 
-`bundle.entry` points at your compiled Gleam output by default, but it's just a path —
-point it at any JavaScript file that exports `handler`, including one your own esbuild
-pass already produced. `bundle.run` reads whatever that path points at; it does not
-compile your project for you, which is why the `gleam build` step above comes first.
+They are copied into `./dist/static`.
 
-This produces a `./dist` folder: a minified, tree-shaken ESM bundle wrapped in the
-platform's worker entry, plus anything from `./public` copied in as static assets.
-
-## 5. Run it locally
+## 4. Run it locally
 
 ```sh
-gleam dev
+gleam run --runtime bun -m giolt dev
 ```
 
-(substitute your own project's name for `my_app`). The scaffolded dev script watches
-`./src` and `./public`, rebuilds on change, and serves the result on `localhost:3000`
-with live reload:
+This builds, then watches `./src` (and your `assets` directory) and rebuilds on change.
+It serves the result on `localhost:3000` with live reload. Change the port, the watched
+directories or live reload under `[tools.giolt]`; see the [CLI reference](/cli).
 
-```gleam
-import giolt_sdk/bundle
-import giolt_sdk/dev
-
-pub fn main() {
-  dev.new()
-  |> dev.watch("./src")
-  |> dev.watch("./public")
-  |> dev.prebuild(fn() { Ok(Nil) })
-  |> dev.build(fn(_change) {
-    bundle.new()
-    |> bundle.entry("./build/dev/javascript/my_app/my_app.mjs")
-    |> bundle.static_dir("./public")
-    |> bundle.run
-    |> bundle.discard_output
-  })
-  |> dev.serve(port: 3000)
-  |> dev.worker("./dist/index.mjs")
-  |> dev.static_dir("./public")
-  |> dev.live_reload(True)
-  |> dev.run
-}
-```
-
-`dev.run` recompiles your whole project before every rebuild, so edits to any Gleam
-file — not just the ones under `dev.watch` — show up on the next reload once you save
-a watched file.
-
-## 6. Deploy it
+## 5. Deploy it
 
 Open your project in the [Giolt dashboard](https://dash.giolt.com) and copy its
 **Deploy key**. It already resolves to exactly one project, so there's no project id
@@ -155,38 +113,19 @@ to set. Export it as the deploy token:
 export GIOLT_TOKEN=your_token_here
 ```
 
-Run the scaffolded `deploy.gleam`:
-
-```gleam
-import build
-import giolt_sdk/deploy
-import gleam/javascript/promise
-
-pub fn main() {
-  let assert Ok(output) = build.main()
-
-  deploy.new()
-  |> deploy.from(output)
-  |> deploy.preview(False)
-  |> deploy.token_from_env("GIOLT_TOKEN")
-  |> deploy.run
-  |> promise.map(deploy.print_result)
-}
-```
-
 ```sh
-gleam run -m deploy
+gleam run --runtime bun -m giolt deploy
 ```
 
-`deploy.from(output)` chains directly off the `bundle.Output` your build produced, so
-this always ships exactly what you just built. Every deploy ships straight to
-production — there's no preview mode yet (see [Limits](/limits)).
+`giolt deploy` builds first, then uploads `./dist`, so it always ships exactly what you
+just built. Every deploy ships straight to production — `--preview` is rejected until
+preview deployments exist (see [Limits](/limits)).
 
 Your project is live at `<slug>.giolt.app`; custom domains aren't supported yet.
 
 ## Next steps
 
-- [Giolt SDK reference](/sdk) — every builder, every setter, and what each one
+- [CLI reference](/cli) — every command, every `[tools.giolt]` key, and what each one
   defaults to.
 - [Limits](/limits) — what isn't supported yet, and the account limits that apply.
 - [Report an issue](https://github.com/withgiolt/issues) if something's broken,
