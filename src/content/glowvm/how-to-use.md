@@ -8,67 +8,68 @@ This page walks through packing a Gleam (Erlang target) app with GlowVM and runn
 such as a Cloudflare Worker.
 
 > [!WARNING]
-> GlowVM is experimental and not yet published to Hex. Requires macOS or Linux to build.
+> GlowVM is experimental. You need Gleam, Erlang/OTP and rebar3 installed to build an app.
 
-## 1. Add the dependency
+## 1. Add the dependencies
 
 ```toml
 # gleam.toml
+name = "my_app"
+target = "erlang"
+
 [dependencies]
-glowvm = ">= 0.1.0 and < 1.0.0"
 wisp = ">= 2.2.2 and < 3.0.0"
+
+[dev-dependencies]
+giolt = ">= 0.1.0 and < 1.0.0"
 ```
 
-GlowVM apps are written as [wisp](https://hexdocs.pm/wisp) handlers — `glowvm.serve` takes a
-`fn(wisp.Request) -> wisp.Response` and runs it as the AtomVM entrypoint.
+GlowVM apps are written as [wisp](https://hexdocs.pm/wisp) handlers. You do not depend on `glowvm`
+yourself: the `giolt` CLI adds the runtime when it builds your app.
 
 ## 2. Write a handler
 
+Your entry module exports one function named `handle`:
+
 ```gleam
-import glowvm
 import wisp
 
-pub fn start() {
-  glowvm.serve(handle_request)
-}
-
-fn handle_request(_req: wisp.Request) -> wisp.Response {
+pub fn handle(_req: wisp.Request) -> wisp.Response {
   wisp.ok() |> wisp.string_body("hello from glowvm")
 }
 ```
 
-`start/0` is the module's entrypoint — it must take no arguments and call `glowvm.serve(handler)`.
+The entry module defaults to your package's own module. If `handle` lives somewhere else, set it in
+`gleam.toml`:
 
-## 3. Pack the app
-
-`glowvm/build` compiles your project, packs it into an AtomVM PackBeam, and writes everything a
-WASI host needs into an output directory:
-
-```gleam
-import glowvm/build
-
-pub fn main() {
-  build.build(output_dir: "dist", module_name: "my_app")
-}
+```toml
+[tools.giolt]
+entry = "my_app/server"
 ```
 
-Run it with:
+There is no `start/0` to write and nothing to register. `giolt` generates the entrypoint for you.
+
+## 3. Build the app
+
+`giolt` runs on JavaScript, so pass `--target javascript` even though your app targets Erlang:
 
 ```sh
-gleam run -m build
+gleam run --target javascript -m giolt build
 ```
 
-`module_name` is the module that exports `start/0` — usually your project's main module. Pass a
-different module name to pack a different entrypoint from a project hosting several apps (one
-`build.build` call per entrypoint).
+It checks that `handle` has the right type, compiles your project, packs it into an AtomVM PackBeam
+and writes everything a WASI host needs into `./dist`. If `handle` is missing, still named
+`handler`, or has the wrong type, the build fails and prints the type it expected and the one it
+found. If Erlang/OTP or rebar3 is missing, it tells you which.
 
-This produces, in `output_dir`:
+`dist/` contains:
 
 - `app.avm` — your compiled BEAM modules, packed as an AtomVM PackBeam
 - `glowvm.wasm` — the AtomVM runtime compiled to `wasm32-wasi`
 - `index.js` / `index.min.js` — the WASI host glue, ready to ship as a Worker entrypoint
-- `app.avm.loader.mjs` / `glowvm.wasm.loader.mjs` / `deno.json` — loader helpers for running the
-  bundle under Deno
+
+Change the output directory with `outdir` under `[tools.giolt]`. `giolt dev` and `giolt deploy` do
+not support the Erlang target yet.
 
 ## 4. Deploy to Cloudflare Workers
 
@@ -101,20 +102,36 @@ npx wrangler deploy
 `index.js` imports `glowvm.wasm` and `app.avm` next to it and exports a `fetch` handler, so no
 further wiring is needed — `dist/` is deployable as-is.
 
-## 5. Run it locally with Deno
+## 5. Run it locally with Bun
 
-`index.js` uses `import wasm from "./glowvm.wasm"` / `import avm from "./app.avm"`, which is
-workerd's import sugar and has no native meaning to Deno. The `.loader.mjs` files GlowVM generates
-exist to bridge that gap through a [Deno import
-map](https://docs.deno.com/runtime/fundamentals/modules/#import-maps):
+`index.js` uses `import wasm from "./glowvm.wasm"` and `import avm from "./app.avm"`, which is
+workerd's import sugar and has no native meaning to Bun. A small plugin supplies the same values:
 
 ```ts
+import { plugin } from "bun";
+import { readFileSync } from "node:fs";
+
+plugin({
+  name: "glowvm-assets",
+  setup(build) {
+    build.onLoad({ filter: /glowvm\.wasm$/ }, (args) => ({
+      exports: { default: new WebAssembly.Module(readFileSync(args.path)) },
+      loader: "object",
+    }));
+    build.onLoad({ filter: /app\.avm$/ }, (args) => ({
+      exports: { default: readFileSync(args.path) },
+      loader: "object",
+    }));
+  },
+});
+
 const { default: worker } = await import("./dist/index.js");
 const response = await worker.fetch(new Request("http://localhost/"));
+console.log(response.status, await response.text());
 ```
 
 ```sh
-deno run -A --import-map=dist/deno.json your_script.ts
+bun run your_script.ts
 ```
 
 Any other WASI-compliant JS runtime works the same way, as long as it can supply `env` and
@@ -127,14 +144,9 @@ Any other WASI-compliant JS runtime works the same way, as long as it can supply
 
 ```gleam
 import envie
-import glowvm
 import wisp
 
-pub fn start() {
-  glowvm.serve(handle_request)
-}
-
-fn handle_request(_req: wisp.Request) -> wisp.Response {
+pub fn handle(_req: wisp.Request) -> wisp.Response {
   let secret = envie.get_string("SECRET_KEY", "NONE")
   wisp.ok() |> wisp.string_body(secret)
 }
