@@ -72,7 +72,7 @@ of artifact: a minified, tree-shaken ESM bundle wrapped in the platform's worker
 Your entry module needs to export a single function:
 
 ```gleam
-pub fn handler(
+pub fn handle(
   request: Request(conversation.RequestBody),
 ) -> Response(conversation.ResponseBody) {
   // or: -> Promise(Response(conversation.ResponseBody))
@@ -82,6 +82,9 @@ pub fn handler(
 That contract is checked at request time inside the generated worker shim, not by
 scanning the entry file, so it works no matter how the export got there — including
 through your own esbuild pass.
+
+Earlier versions expected this function to be called `handler`. That name is no longer
+recognised: rename the export to `handle`.
 
 Deployed Workers carry no bindings — no env vars, no KV/D1/R2, no secrets. See
 [Limits](/limits) for this and everything else not supported yet.

@@ -55,14 +55,14 @@ your project:
 gleam add conversation
 ```
 
-Giolt expects your compiled entry module to export a single `handler` function:
+Giolt expects your compiled entry module to export a single `handle` function:
 
 ```gleam
 import conversation
 import gleam/http/request.{type Request}
 import gleam/http/response.{type Response}
 
-pub fn handler(
+pub fn handle(
   _request: Request(conversation.RequestBody),
 ) -> Response(conversation.ResponseBody) {
   response.new(200)
@@ -73,8 +73,12 @@ pub fn handler(
 Use these types exactly. A plain `String` body compiles, but the worker serves only its
 first character.
 
-`handler` can also return a `Promise(Response(conversation.ResponseBody))` if you need to do async work
+`handle` can also return a `Promise(Response(conversation.ResponseBody))` if you need to do async work
 (a database call, an outbound fetch) before responding.
+
+> **Migrating from `handler`:** earlier versions of the SDK expected the export to be named
+> `handler`. It is now `handle`, and `handler` is no longer recognised, so rename the function
+> in your entry module before you build and deploy again.
 
 ## 4. Build it
 
@@ -100,7 +104,7 @@ pub fn main() {
 ```
 
 `bundle.entry` points at your compiled Gleam output by default, but it's just a path —
-point it at any JavaScript file that exports `handler`, including one your own esbuild
+point it at any JavaScript file that exports `handle`, including one your own esbuild
 pass already produced. `bundle.run` reads whatever that path points at; it does not
 compile your project for you, which is why the `gleam build` step above comes first.
 
