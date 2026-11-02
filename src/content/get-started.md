@@ -110,7 +110,7 @@ platform's worker entry, plus anything from `./public` copied in as static asset
 ## 5. Run it locally
 
 ```sh
-gleam run -m my_app_dev
+gleam dev
 ```
 
 (substitute your own project's name for `my_app`). The scaffolded dev script watches
