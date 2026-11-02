@@ -22,8 +22,8 @@ For a walkthrough from a fresh project, see [Get started](/get-started).
 | Command | What it does |
 | --- | --- |
 | `giolt build` | Checks `handle`, compiles and bundles into `outdir`. |
-| `giolt dev` | Builds, watches, serves on `port` and reloads on change. JavaScript target only. |
-| `giolt deploy [--preview] [--message TEXT]` | Builds, then uploads `outdir` to Giolt. JavaScript target only. |
+| `giolt dev` | Builds, watches, serves on `port` and reloads on change. JavaScript target only, except for static sites. |
+| `giolt deploy [--preview] [--message TEXT] [--artifact DIR]` | Builds, then uploads `outdir` to Giolt. With `artifact`, uploads that directory instead. |
 | `giolt --help` | Prints the commands. `giolt <command> --help` prints that command's flags. |
 
 A command that fails exits non-zero, so it works in CI and in scripts.
@@ -70,6 +70,7 @@ port = 3000
 live_reload = true
 api_url = "https://dash.giolt.com"
 prebuild = "gleam run -m docs/build"
+artifact = "./site"
 ```
 
 - **`entry`** — defaults to your package name. The module that exports `handle`, such
@@ -92,6 +93,8 @@ prebuild = "gleam run -m docs/build"
   `GIOLT_API_URL` environment variable takes precedence.
 - **`prebuild`** — defaults to none. A shell command that runs before every build,
   including each rebuild in `dev`. Use it for code generation or a static site step.
+- **`artifact`** — defaults to none. A directory to deploy as a static site, with no
+  Worker. See [Static sites](#static-sites).
 
 The bundle has nothing else to configure: Giolt produces one kind of artifact, a
 minified, tree-shaken ESM bundle wrapped in the platform's worker entry.
@@ -138,8 +141,35 @@ metering shim uses that prefix.
 
 Everything under `<outdir>/static/` uploads as a static asset, everything else uploads
 as a Worker module. `assets` places your files under `static/` for you, and `giolt
-build` always adds the worker module outside it. An assets-only deploy, with no Worker
-script, is not possible from the CLI yet.
+build` always adds the worker module outside it. To deploy with no Worker script at all,
+use `artifact`.
+
+## Static sites
+
+Set `artifact` to a directory and Giolt deploys it as an assets-only site: no Worker
+script, no compute, requests served straight off Cloudflare's CDN, and no usage billed
+(there's no `fetch` handler for the request meter to hook into).
+
+```toml
+[tools.giolt]
+artifact = "./site"
+prebuild = "gleam run -m my_site/build"
+```
+
+With `artifact` set, Giolt skips the `handle` check, `gleam build` and the bundle:
+
+- **`giolt build`** runs `prebuild`, then checks the directory exists and is not empty.
+- **`giolt deploy`** runs `prebuild`, then uploads every file in the directory as a static
+  asset. You do not create a `static/` folder; `index.html` at the top of the directory
+  is `index.html` at the root of the site. `--artifact DIR` overrides the key for one
+  deploy.
+- **`giolt dev`** runs `prebuild` on every change under `watch`, serves the directory and
+  reloads the browser. Anything that matches no file is a 404.
+
+Set `spa = true` to serve `index.html` for paths that match no file, so client-side
+routes survive a refresh. Anything you want in the site has to be in the directory
+already, so have `prebuild` write it there and clear the directory first if you change
+where your build writes to.
 
 ## Erlang target
 

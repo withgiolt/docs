@@ -123,6 +123,9 @@ preview deployments exist (see [Limits](/limits)).
 
 Your project is live at `<slug>.giolt.app`; custom domains aren't supported yet.
 
+Building a static site with no Worker? Set `artifact` to the directory your site is
+written to; see [Static sites](/cli#static-sites).
+
 ## Next steps
 
 - [CLI reference](/cli) — every command, every `[tools.giolt]` key, and what each one
