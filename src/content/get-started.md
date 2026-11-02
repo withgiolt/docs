@@ -48,19 +48,32 @@ again or overwritten.
 
 ## 3. Write a handler
 
+Handlers speak [`conversation`](https://hexdocs.pm/conversation) types, so add it to
+your project:
+
+```sh
+gleam add conversation
+```
+
 Giolt expects your compiled entry module to export a single `handler` function:
 
 ```gleam
+import conversation
 import gleam/http/request.{type Request}
 import gleam/http/response.{type Response}
 
-pub fn handler(request: Request(String)) -> Response(String) {
+pub fn handler(
+  _request: Request(conversation.RequestBody),
+) -> Response(conversation.ResponseBody) {
   response.new(200)
-  |> response.set_body("Hello from Giolt!")
+  |> response.set_body(conversation.Text("Hello from Giolt!"))
 }
 ```
 
-`handler` can also return a `Promise(Response(Body))` if you need to do async work
+Use these types exactly. A plain `String` body compiles, but the worker serves only its
+first character.
+
+`handler` can also return a `Promise(Response(conversation.ResponseBody))` if you need to do async work
 (a database call, an outbound fetch) before responding.
 
 ## 4. Build it
@@ -134,8 +147,9 @@ a watched file.
 
 ## 6. Deploy it
 
-Grab a deploy token from the [Giolt dashboard](https://giolt.com) — it already
-resolves to exactly one project, so there's no project id to set — then export it:
+Open your project in the [Giolt dashboard](https://dash.giolt.com) and copy its
+**Deploy key**. It already resolves to exactly one project, so there's no project id
+to set. Export it as the deploy token:
 
 ```sh
 export GIOLT_TOKEN=your_token_here
