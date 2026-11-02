@@ -72,8 +72,10 @@ of artifact: a minified, tree-shaken ESM bundle wrapped in the platform's worker
 Your entry module needs to export a single function:
 
 ```gleam
-pub fn handler(request: Request(Body)) -> Response(Body) {
-  // or: -> Promise(Response(Body))
+pub fn handler(
+  request: Request(conversation.RequestBody),
+) -> Response(conversation.ResponseBody) {
+  // or: -> Promise(Response(conversation.ResponseBody))
 }
 ```
 
@@ -170,7 +172,7 @@ Run with `gleam run -m deploy`.
 - **`deploy.token(value)`** — optional. Pass the deploy token directly instead of
   reading it from the environment.
 - **`deploy.message(text)`** — optional. A message to attach to the deployment.
-- **`deploy.api_url(url)`** — optional, defaults to `https://giolt.com`. Also
+- **`deploy.api_url(url)`** — optional, defaults to `https://dash.giolt.com`. Also
   overridable via the `GIOLT_API_URL` environment variable, which takes precedence.
 
 `deploy.token_from_env` (or the environment variable it names) is the one place the SDK
