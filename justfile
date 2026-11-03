@@ -3,7 +3,7 @@ default:
 
 # Build, watch and serve the site on http://localhost:3000
 dev:
-    NODE_ENV=development gleam dev
+    NODE_ENV=development gleam run --runtime bun -m giolt dev
 
 check:
     gleam check
@@ -13,10 +13,10 @@ format:
     gleam format
     bun fmt
 
-# Generate the site and bundle it for Giolt into ./dist
+# Generate the site into ./dist/static
 build:
-    gleam run -m build
+    gleam run --runtime bun -m giolt build
 
-# Ship ./dist to Giolt. Needs GIOLT_TOKEN (the project's deploy key).
+# Build and ship ./dist/static to Giolt. Needs GIOLT_TOKEN (the project's deploy key).
 deploy:
-    gleam run -m deploy
+    gleam run --runtime bun -m giolt deploy
