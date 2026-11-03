@@ -10,7 +10,7 @@ GlowVM's own (much longer) list.
 
 ## Not yet supported
 
-- **Environment variables & bindings.** Deployed projects carry no bindings at all. 
+- **Environment variables & bindings.** Deployed projects carry no bindings at all.
   Nothing you deploy can read anything from `env`.
   Planned, not started.
 - **Custom domains.** Every project gets `<slug>.giolt.app`; there's no way to attach
