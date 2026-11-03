@@ -19,8 +19,8 @@ GlowVM's own (much longer) list.
   ("Preview deployments aren't supported yet.") — every deploy ships straight to
   production, and there's no rollback beyond deploying an older build again yourself.
   Planned.
-- **CI integration.** Nothing beyond running `giolt` yourself — no GitHub
-  Actions/GitLab CI integration yet. Planned.
+- **CI integration.** Nothing beyond running `giolt` in your own pipeline (see
+  [Deploy from CI](/ci)): no GitHub Actions or GitLab CI integration yet. Planned.
 
 ## Hard limits
 
@@ -35,4 +35,4 @@ Deploying requires an active subscription ($5/month, 1,000,000 requests included
 $0.50 per additional million). If the subscription lapses, every route on the project —
 including ones a static asset used to serve — starts returning a 402 placeholder page
 until it's resumed; nothing is deleted, and the project's own content serves again as
-soon as billing is current. See your usage any time in the dashboard under Settings.
+soon as billing is current. See your usage any time in the dashboard under Settings, or with `giolt usage`.

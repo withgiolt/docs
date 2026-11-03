@@ -112,23 +112,32 @@ directories or live reload under `[tools.giolt]`; see the [CLI reference](/cli).
 
 ## 5. Deploy it
 
-Open your project in the [Giolt dashboard](https://dash.giolt.com) and copy its
-**Deploy key**. It already resolves to exactly one project, so there's no project id
-to set. Export it as the deploy token:
+Sign in. This opens your browser to approve the login. Creating a project and
+deploying need an active subscription on your Giolt account:
 
 ```sh
-export GIOLT_TOKEN=your_token_here
+gleam run -m giolt login
 ```
+
+Create a project and link this directory to it. The name becomes your URL, so pick
+something like `my-app`:
+
+```sh
+gleam run -m giolt projects create my-app
+gleam run -m giolt link my-app
+```
+
+`giolt link` writes `project = <id>` into your `gleam.toml`; commit it. Then deploy:
 
 ```sh
 gleam run -m giolt deploy
 ```
 
 `giolt deploy` builds first, then uploads `./dist`, so it always ships exactly what you
-just built. Every deploy ships straight to production — `--preview` is rejected until
+just built. To deploy from CI, see [Deploy from CI](/ci). Every deploy ships straight to production — `--preview` is rejected until
 preview deployments exist (see [Limits](/limits)).
 
-Your project is live at `<slug>.giolt.app`; custom domains aren't supported yet.
+Your project is live at `my-app.giolt.app`; custom domains aren't supported yet.
 
 Building a static site with no Worker? Set `artifact` to the directory your site is
 written to; see [Static sites](/cli#static-sites).
@@ -137,6 +146,7 @@ written to; see [Static sites](/cli#static-sites).
 
 - [CLI reference](/cli) — every command, every `[tools.giolt]` key, and what each one
   defaults to.
+- [Deploy from CI](/ci) — deploying without a browser login.
 - [Limits](/limits) — what isn't supported yet, and the account limits that apply.
 - [Report an issue](https://github.com/withgiolt/issues) if something's broken,
   confusing, or missing.
