@@ -35,7 +35,11 @@ For a walkthrough from a fresh project, see [Get started](/get-started).
 | `giolt link NAME [--config FILE]`                                            | Links this directory to a project, so `deploy` knows where to go.                                         |
 | `giolt unlink [--config FILE]`                                               | Removes the link.                                                                                         |
 | `giolt usage [--json]`                                                       | Shows your account's requests this billing period.                                                        |
-| `giolt --help`                                                               | Prints the commands. `giolt <command> --help` prints that command's flags.                                |
+| `giolt help`                                                                 | Prints the commands. `giolt` with no arguments does the same.                                             |
+| `giolt <command> --help`                                                     | Prints that command's flags.                                                                              |
+
+`gleam run -m giolt -h` prints help for `gleam run`, not for `giolt`, because Gleam reads
+the flag first. Use `gleam run -m giolt help` instead.
 
 A command that fails exits non-zero, so it works in CI and in scripts.
 
