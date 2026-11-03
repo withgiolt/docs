@@ -107,7 +107,7 @@ GlowVM is early. Roughly in priority order:
   2 pass system, while GlowVM will directly pause the runtime to do work and resumes when done.
 - **Smaller cold starts.** Reducing the shipped `glowvm.wasm` size and packed BEAM footprint to cut
   cold-start latency.
-- **Broader WASI host support.** WASI-compliant JS runtimes (Deno Deploy and similar) are being validated
+- **Broader WASI host support.** Other WASI-compliant JS runtimes are being validated
   as they come up.
 
 Have a use case that needs something not listed here? Open an issue on
