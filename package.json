@@ -1,0 +1,10 @@
+{
+  "name": "docs",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.20",
+    "daisyui": "^5.7.22",
+    "tailwindcss": "^4.3.3"
+  }
+}

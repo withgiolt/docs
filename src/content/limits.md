@@ -10,8 +10,8 @@ GlowVM's own (much longer) list.
 
 ## Not yet supported
 
-- **Environment variables & bindings.** Deployed Workers carry no bindings at all — no
-  env vars, no KV/D1/R2, no secrets. Nothing you deploy can read anything from `env`.
+- **Environment variables & bindings.** Deployed projects carry no bindings at all. 
+  Nothing you deploy can read anything from `env`.
   Planned, not started.
 - **Custom domains.** Every project gets `<slug>.giolt.app`; there's no way to attach
   your own domain yet. In progress.
@@ -27,8 +27,7 @@ GlowVM's own (much longer) list.
 - **5 projects per account.** Creating a 6th fails outright; there's no way to raise
   this today.
 - **Module paths starting with `__giolt` are reserved** and rejected at deploy (400
-  "Module path uses a reserved name") — the platform's own metering shim uses that
-  prefix internally.
+  "Module path uses a reserved name").
 
 ## Billing & usage
 

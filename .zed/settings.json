@@ -1,50 +1,16 @@
 {
   "languages": {
     "Gleam": {
-      "language_servers": ["tailwindcss-language-server", "..."],
-    },
-    "JavaScript": {
-      "language_servers": [
-        "deno",
-        "!typescript-language-server",
-        "!vtsls",
-        "!eslint",
-      ],
-      "formatter": "language_server",
-    },
-    "TypeScript": {
-      "language_servers": [
-        "deno",
-        "!typescript-language-server",
-        "!vtsls",
-        "!eslint",
-      ],
-      "formatter": "language_server",
-    },
-    "TSX": {
-      "language_servers": [
-        "deno",
-        "!typescript-language-server",
-        "!vtsls",
-        "!eslint",
-      ],
-      "formatter": "language_server",
-    },
+      "language_servers": ["tailwindcss-language-server", "..."]
+    }
   },
   "lsp": {
-    "deno": {
-      "settings": {
-        "deno": {
-          "enable": true,
-        },
-      },
-    },
     "tailwindcss-language-server": {
       "settings": {
         "experimental": {
-          "classRegex": ["attribute\\.class\\(\\s*\"([^\"]*)\""],
-        },
-      },
-    },
-  },
+          "classRegex": ["attribute\\.class\\(\\s*\"([^\"]*)\""]
+        }
+      }
+    }
+  }
 }

@@ -5,7 +5,7 @@ title = "How to use GlowVM"
 # How to use GlowVM
 
 This page walks through packing a Gleam (Erlang target) app with GlowVM and running it on a WASI host
-such as a Cloudflare Worker.
+such as a WASI-compatible JS runtime.
 
 > [!WARNING]
 > GlowVM is experimental. You need Gleam, Erlang/OTP and rebar3 installed to build an app.
@@ -66,46 +66,15 @@ found. If Erlang/OTP or rebar3 is missing, it tells you which.
 
 - `app.avm` — your compiled BEAM modules, packed as an AtomVM PackBeam
 - `glowvm.wasm` — the AtomVM runtime compiled to `wasm32-wasi`
-- `index.js` / `index.min.js` — the WASI host glue, ready to ship as a Worker entrypoint
+- `index.js` / `index.min.js` — the WASI host glue, ready to use as a WASI host entrypoint
 
 Change the output directory with `outdir` under `[tools.giolt]`. `giolt dev` and `giolt deploy` do
 not support the Erlang target yet.
 
-## 4. Deploy to Cloudflare Workers
-
-Point `wrangler.toml` at the generated `index.js`:
-
-```toml
-name = "test"
-main = "index.min.js"
-compatibility_date = "2026-08-29"
-compatibility_flags = ["nodejs_compat"]
-
-[observability]
-enabled = false
-
-[[rules]]
-type = "CompiledWasm"
-globs = ["**/*.wasm"]
-fallthrough = true
-
-[[rules]]
-type = "Data"
-globs = ["**/*.avm"]
-fallthrough = true
-```
-
-```sh
-npx wrangler deploy
-```
-
-`index.js` imports `glowvm.wasm` and `app.avm` next to it and exports a `fetch` handler, so no
-further wiring is needed — `dist/` is deployable as-is.
-
-## 5. Run it locally with Bun
+## 4. Run it locally with Bun
 
 `index.js` uses `import wasm from "./glowvm.wasm"` and `import avm from "./app.avm"`, which is
-workerd's import sugar and has no native meaning to Bun. A small plugin supplies the same values:
+a bundler-level import convention and has no native meaning to Bun. A small plugin supplies the same values:
 
 ```ts
 import { plugin } from "bun";

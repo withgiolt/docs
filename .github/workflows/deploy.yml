@@ -17,9 +17,7 @@ jobs:
         with:
           otp-version: "28"
           gleam-version: "1.18"
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
+      - uses: oven-sh/setup-bun@v2
 
       - name: Cache Gleam build
         uses: actions/cache@v4
@@ -29,18 +27,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gleam-build-
 
-      - name: Cache Deno node_modules
+      - name: Cache node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.os }}-deno-node_modules-${{ hashFiles('deno.lock') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('bun.lock') }}
           restore-keys: |
-            ${{ runner.os }}-deno-node_modules-
+            ${{ runner.os }}-node_modules-
 
       - name: Install dependencies
         run: |
           gleam deps download
-          deno ci
+          bun install --frozen-lockfile
 
       - name: Build & Deploy
         run: just deploy

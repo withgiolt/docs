@@ -19,12 +19,12 @@ For a walkthrough from a fresh project, see [Get started](/get-started).
 
 ## Commands
 
-| Command | What it does |
-| --- | --- |
-| `giolt build` | Checks `handle`, compiles and bundles into `outdir`. |
-| `giolt dev` | Builds, watches, serves on `port` and reloads on change. JavaScript target only, except for static sites. |
-| `giolt deploy [--preview] [--artifact DIR]` | Builds, then uploads `outdir` to Giolt. With `artifact`, uploads that directory instead. |
-| `giolt --help` | Prints the commands. `giolt <command> --help` prints that command's flags. |
+| Command                                     | What it does                                                                                              |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `giolt build`                               | Checks `handle`, compiles and bundles into `outdir`.                                                      |
+| `giolt dev`                                 | Builds, watches, serves on `port` and reloads on change. JavaScript target only, except for static sites. |
+| `giolt deploy [--preview] [--artifact DIR]` | Builds, then uploads `outdir` to Giolt. With `artifact`, uploads that directory instead.                  |
+| `giolt --help`                              | Prints the commands. `giolt <command> --help` prints that command's flags.                                |
 
 A command that fails exits non-zero, so it works in CI and in scripts.
 
@@ -51,7 +51,7 @@ clear message when `handle` is missing, still named `handler`, takes the wrong n
 parameters or has the wrong types. The generated worker also checks at request time, so
 a bundle you produced another way still gets a clear 500 instead of a crash.
 
-Deployed Workers carry no bindings — no env vars, no KV/D1/R2, no secrets. See
+Deployed projects carry no bindings. See
 [Limits](/limits) for this and everything else not supported yet.
 
 ## Configuration
@@ -146,7 +146,7 @@ use `artifact`.
 ## Static sites
 
 Set `artifact` to a directory and Giolt deploys it as an assets-only site: no Worker
-script, no compute, requests served straight off Cloudflare's CDN, and no usage billed
+script, no compute, requests served straight from Giolt's CDN, and no usage billed
 (there's no `fetch` handler for the request meter to hook into).
 
 ```toml

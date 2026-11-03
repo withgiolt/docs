@@ -7,11 +7,11 @@ dev:
 
 check:
     gleam check
-    deno check
+    bun fmt --check
 
 format:
     gleam format
-    deno fmt
+    bun fmt
 
 # Generate the site and bundle it for Giolt into ./dist
 build:
