@@ -15,6 +15,8 @@ https://dash.giolt.com/api/v1
   account and usage.
 - [Deploy](/api/deploy): upload a new version of a project.
 
+Timestamps are RFC 3339 strings in UTC, such as `2026-11-03T11:35:05Z`.
+
 ## Authentication
 
 Send a token in the `Authorization` header on every request:
@@ -32,10 +34,13 @@ There are three kinds of credential:
 | API token   | the [Tokens](https://dash.giolt.com/tokens) dashboard page | every project in your account   |
 | Deploy key  | each project's page in the dashboard                       | deploying that one project only |
 
-Login and API tokens start with `giolt_`. Both are tied to your account, carry a set
-of scopes, and expire after 90 days unless you chose no expiry when you created an API
-token in the dashboard. You can revoke either kind on the Tokens page, and `giolt logout`
-revokes its own login token. The dashboard shows a token once, when it is created.
+Login and API tokens start with `giolt_`. Both are tied to your account and carry a
+set of scopes. A login token expires after 90 days. An API token expires after 30, 90 or
+365 days, or never, as you choose when you create it. You can revoke either kind on the
+Tokens page, and `giolt logout` revokes its own login token. The dashboard shows a token
+once, when it is created.
+
+A deploy key works only for deploying its own project; every other route answers `403`.
 
 Tokens are managed only in the dashboard. No API route creates, lists or revokes other
 tokens, so a leaked token can't be used to make more.
@@ -100,7 +105,8 @@ and is safe to show as it is.
 | 404    | `not_found`                                          | no such project in your account                                       |
 | 409    | `slug_taken`, `slug_reserved`, `project_limit`       | the name is in use or reserved, or you have 5 projects                |
 | 413    | `payload_too_large`                                  | the deploy is over a size limit                                       |
-| 502    | `upstream_failed`                                    | Giolt couldn't finish the change; try again                           |
+| 405    | `method_not_allowed`                                 | the path exists but not with this method; see the `Allow` header      |
+| 502    | `upstream_failed`                                    | Giolt couldn't finish the change; the `message` says whether to retry |
 
 A project that belongs to another account answers `404`, the same as one that doesn't
 exist.

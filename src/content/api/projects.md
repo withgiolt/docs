@@ -77,7 +77,7 @@ curl https://dash.giolt.com/api/v1/projects \
 ```
 
 Returns `{ "data": [project, ...] }`. Add `?slug=my-app` to find a project by name: `data`
-then holds the one match, or nothing.
+then holds the one match, or nothing, including when the name isn't a valid slug.
 
 ## Get a project
 
@@ -135,6 +135,10 @@ curl -X PATCH https://dash.giolt.com/api/v1/projects/42 \
 Returns the renamed project. Renaming changes the project's URL straight away:
 `my-new-name.giolt.app` serves the current deployment, and the old address stops
 working, with no redirect. Errors are the same as for create, without `project_limit`.
+
+If the new name is saved but Giolt can't move the URL, the rename answers `502
+upstream_failed` with the message "Saved, but the new URL won't work until you deploy
+again." Don't retry the rename; deploy the project instead.
 
 ## Delete a project
 

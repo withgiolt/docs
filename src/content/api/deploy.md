@@ -82,6 +82,7 @@ path that caused it.
 | 402    | `billing_required`  | the account has no active subscription                                                                         |
 | 403    | `forbidden`         | the token lacks `deploy`, or the deploy key belongs to another project                                         |
 | 413    | `payload_too_large` | over one of the limits above                                                                                   |
+| 502    | `upstream_failed`   | Giolt couldn't finish the deploy; try again                                                                    |
 
 ## Older CLIs
 
