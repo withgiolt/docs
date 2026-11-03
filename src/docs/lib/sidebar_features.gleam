@@ -18,7 +18,7 @@ pub fn get_sidebar_features(current_path: String) {
     SidebarDropdown("Hello, world!", [
       SidebarLink("Home", "/", False, current_path:),
       SidebarLink("Get started", "/get-started", False, current_path:),
-      SidebarLink("SDK", "/sdk", False, current_path:),
+      SidebarLink("CLI", "/cli", False, current_path:),
       SidebarLink("Limits", "/limits", False, current_path:),
     ]),
     SidebarDropdown("API", [

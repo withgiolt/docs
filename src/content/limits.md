@@ -15,11 +15,11 @@ GlowVM's own (much longer) list.
   Planned, not started.
 - **Custom domains.** Every project gets `<slug>.giolt.app`; there's no way to attach
   your own domain yet. In progress.
-- **Preview deployments & rollbacks.** `deploy.preview(True)` is rejected with a 400
+- **Preview deployments & rollbacks.** `giolt deploy --preview` is rejected with a 400
   ("Preview deployments aren't supported yet.") — every deploy ships straight to
   production, and there's no rollback beyond deploying an older build again yourself.
   Planned.
-- **CI integration.** Nothing beyond running the SDK's scripts yourself — no GitHub
+- **CI integration.** Nothing beyond running `giolt` yourself — no GitHub
   Actions/GitLab CI integration yet. Planned.
 
 ## Hard limits
