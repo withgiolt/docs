@@ -102,8 +102,9 @@ project = 7
 - **`live_reload`** — defaults to `true`. Pushes browser reloads over SSE after a
   rebuild.
 - **`api_url`** — defaults to `https://dash.giolt.com`. The API `deploy` talks to. The
-  `GIOLT_API_URL` environment variable takes precedence. The account and project
-  commands don't read it; see Signing in below.
+  `GIOLT_API_URL` environment variable takes precedence. Only used when the token
+  comes from `GIOLT_TOKEN`: a stored login always goes back to the API it was created
+  on, and the other commands don't read this key.
 - **`prebuild`** — defaults to none. A shell command that runs before every build,
   including each rebuild in `dev`. Use it for code generation or a static site step.
 - **`artifact`** — defaults to none. A directory to deploy as a static site, with no
@@ -239,9 +240,10 @@ hold a dashboard token or a project's deploy key. A deploy key only works for
 
 ### Which API the commands talk to
 
-A stored token is always sent back to the API it was created on. A token from
-`GIOLT_TOKEN` goes to `GIOLT_API_URL`, or to `https://dash.giolt.com` when that is unset.
-The `api_url` key in `gleam.toml` only applies to `giolt deploy`.
+A stored token is always sent back to the API it was created on, and nothing
+overrides that. A token from `GIOLT_TOKEN` goes to `GIOLT_API_URL` when it is set, or
+to `https://dash.giolt.com`. `giolt deploy` with `GIOLT_TOKEN` also reads `api_url`,
+between those two.
 
 ### `giolt whoami` and `giolt logout`
 
