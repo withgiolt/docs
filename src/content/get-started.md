@@ -9,7 +9,7 @@ This walks through taking a Gleam project from nothing to deployed on Giolt: add
 
 ## Prerequisites
 
-- [Gleam](https://gleam.run) and [Bun](https://bun.sh) installed.
+- [Gleam](https://gleam.run) and either [Node](https://nodejs.org) 20 or newer, or [Bun](https://bun.sh), installed.
 - A Gleam project targeting `javascript`. If you don't have one, create one with:
 
   ```sh
@@ -27,8 +27,8 @@ gleam add --dev giolt
 ```
 
 `giolt` has no scripts to scaffold. You run it with `gleam run -m giolt <command>` and
-configure it, if you need to, under `[tools.giolt]` in your `gleam.toml`. Add
-`--runtime bun` to run it on Bun:
+configure it, if you need to, under `[tools.giolt]` in your `gleam.toml`. It runs on Node by
+default; add `--runtime bun` to run it on Bun:
 
 ```sh
 gleam run --runtime bun -m giolt --help
@@ -76,7 +76,7 @@ entry = "my_app/server"
 ## 3. Build it
 
 ```sh
-gleam run --runtime bun -m giolt build
+gleam run -m giolt build
 ```
 
 `giolt build` checks `handle` against your project's package interface first. If it is
@@ -96,7 +96,7 @@ They are copied into `./dist/static`.
 ## 4. Run it locally
 
 ```sh
-gleam run --runtime bun -m giolt dev
+gleam run -m giolt dev
 ```
 
 This builds, then watches `./src` (and your `assets` directory) and rebuilds on change.
@@ -114,7 +114,7 @@ export GIOLT_TOKEN=your_token_here
 ```
 
 ```sh
-gleam run --runtime bun -m giolt deploy
+gleam run -m giolt deploy
 ```
 
 `giolt deploy` builds first, then uploads `./dist`, so it always ships exactly what you

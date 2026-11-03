@@ -6,8 +6,9 @@ title = "CLI"
 
 `giolt` is a Gleam package you run with `gleam run -m giolt <command>`. It builds,
 runs and deploys your app, and it reads its configuration from `[tools.giolt]` in your
-own `gleam.toml`, so there are no scripts to keep in sync. Bun is the supported
-runtime; add `--runtime bun` to the command.
+own `gleam.toml`, so there are no scripts to keep in sync. It runs on Node 20 or newer,
+which is Gleam's default JavaScript runtime, and on Bun; add `--runtime bun` to run it
+on Bun.
 
 ## Installation
 
@@ -19,12 +20,12 @@ For a walkthrough from a fresh project, see [Get started](/get-started).
 
 ## Commands
 
-| Command                                     | What it does                                                                                              |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `giolt build`                               | Checks `handle`, compiles and bundles into `outdir`.                                                      |
-| `giolt dev`                                 | Builds, watches, serves on `port` and reloads on change. JavaScript target only, except for static sites. |
-| `giolt deploy [--preview] [--artifact DIR]` | Builds, then uploads `outdir` to Giolt. With `artifact`, uploads that directory instead.                  |
-| `giolt --help`                              | Prints the commands. `giolt <command> --help` prints that command's flags.                                |
+| Command                                                     | What it does                                                                                              |
+| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `giolt build [--config FILE]`                               | Checks `handle`, compiles and bundles into `outdir`.                                                      |
+| `giolt dev [--config FILE]`                                 | Builds, watches, serves on `port` and reloads on change. JavaScript target only, except for static sites. |
+| `giolt deploy [--preview] [--artifact DIR] [--config FILE]` | Builds, then uploads `outdir` to Giolt. With `artifact`, uploads that directory instead.                  |
+| `giolt --help`                                              | Prints the commands. `giolt <command> --help` prints that command's flags.                                |
 
 A command that fails exits non-zero, so it works in CI and in scripts.
 
@@ -99,10 +100,36 @@ artifact = "./site"
 The bundle has nothing else to configure: Giolt produces one kind of artifact, a
 minified, tree-shaken ESM bundle wrapped in the platform's worker entry.
 
+### More than one build in a project
+
+`build`, `dev` and `deploy` all take `--config FILE`. Giolt then reads `[tools.giolt]` from
+that TOML file instead of from `gleam.toml`. The package `name` and `target` still come from
+`gleam.toml`, and any key the file leaves out falls back to its default, not to the value in
+`gleam.toml`. Use it when one package has several entry modules, such as a landing page and
+a dashboard:
+
+```toml
+# giolt.dash.toml
+[tools.giolt]
+entry = "dash"
+outdir = "./dist-dash"
+port = 3001
+```
+
+Give each build its own `outdir`, and don't nest one inside another: `outdir` is deleted before
+every build. A different `port` lets both dev servers run at once.
+
+```sh
+gleam run -m giolt dev --config giolt.dash.toml
+```
+
+Giolt exits with an error when the file is missing, isn't valid TOML, or holds an invalid value.
+A file with no `[tools.giolt]` table is not an error: every key takes its default.
+
 ## `giolt build`
 
 ```sh
-gleam run --runtime bun -m giolt build
+gleam run -m giolt build
 ```
 
 It runs `prebuild`, checks `handle`, runs `gleam build --target javascript`, then
@@ -112,7 +139,7 @@ needed.
 ## `giolt dev`
 
 ```sh
-gleam run --runtime bun -m giolt dev
+gleam run -m giolt dev
 ```
 
 It builds once, then rebuilds on every change under `watch` and serves the result. The
@@ -124,11 +151,12 @@ serving the last worker it loaded.
 
 ```sh
 export GIOLT_TOKEN=your_token_here
-gleam run --runtime bun -m giolt deploy
+gleam run -m giolt deploy
 ```
 
 - **`--preview`** — not implemented yet; the platform rejects it with a 400 ("Preview
   deployments aren't supported yet."). See [Limits](/limits).
+- **`--artifact DIR`** — deploy this directory as a static site, skipping the build.
 
 The deploy token comes from the `GIOLT_TOKEN` environment variable, the one place the
 CLI reads your environment besides `GIOLT_API_URL`. There is no `.env` loading.
@@ -173,8 +201,9 @@ where your build writes to.
 ## Erlang target
 
 A project with `target = "erlang"` builds for GlowVM. `giolt build` needs Erlang/OTP and
-rebar3 installed and tells you which one is missing. `dev` and `deploy` do not support
-this target yet. See [How to use GlowVM](/glowvm/how-to-use).
+rebar3 installed and tells you which one is missing. Run it with
+`gleam run --target javascript -m giolt build`, because giolt itself runs on JavaScript. `dev`
+and `deploy` do not support this target yet. See [How to use GlowVM](/glowvm/how-to-use).
 
 ## Next steps
 
