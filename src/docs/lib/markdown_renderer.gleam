@@ -6,7 +6,10 @@ import mork
 import mork/document
 
 pub fn parse(string: String) {
-  let doc = mork.parse(string)
+  let doc =
+    mork.configure()
+    |> mork.tables(True)
+    |> mork.parse_with_options(string)
 
   let blocks = list.map(doc.blocks, render_block(doc, _))
 
