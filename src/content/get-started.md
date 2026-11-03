@@ -13,12 +13,19 @@ This walks through taking a Gleam project from nothing to deployed on Giolt: add
 - A Gleam project targeting `javascript`. If you don't have one, create one with:
 
   ```sh
-  gleam new my_app
+  gleam new --template javascript my_app
   cd my_app
   ```
 
-  Projects targeting `erlang` build for [GlowVM](/glowvm/about) instead; see
-  [How to use GlowVM](/glowvm/how-to-use).
+  Plain `gleam new` targets `erlang`, Gleam's default. For an existing project, add this
+  line to the top level of `gleam.toml`:
+
+  ```toml
+  target = "javascript"
+  ```
+
+  Projects targeting `erlang` build for [GlowVM](/glowvm/about) instead, and `giolt dev`
+  and `giolt deploy` don't support them yet; see [How to use GlowVM](/glowvm/how-to-use).
 
 ## 1. Add the CLI
 
