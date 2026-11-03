@@ -23,7 +23,7 @@ For a walkthrough from a fresh project, see [Get started](/get-started).
 | --- | --- |
 | `giolt build` | Checks `handle`, compiles and bundles into `outdir`. |
 | `giolt dev` | Builds, watches, serves on `port` and reloads on change. JavaScript target only, except for static sites. |
-| `giolt deploy [--preview] [--message TEXT] [--artifact DIR]` | Builds, then uploads `outdir` to Giolt. With `artifact`, uploads that directory instead. |
+| `giolt deploy [--preview] [--artifact DIR]` | Builds, then uploads `outdir` to Giolt. With `artifact`, uploads that directory instead. |
 | `giolt --help` | Prints the commands. `giolt <command> --help` prints that command's flags. |
 
 A command that fails exits non-zero, so it works in CI and in scripts.
@@ -129,7 +129,6 @@ gleam run --runtime bun -m giolt deploy
 
 - **`--preview`** — not implemented yet; the platform rejects it with a 400 ("Preview
   deployments aren't supported yet."). See [Limits](/limits).
-- **`--message TEXT`** — accepted, but not sent to the platform yet.
 
 The deploy token comes from the `GIOLT_TOKEN` environment variable, the one place the
 CLI reads your environment besides `GIOLT_API_URL`. There is no `.env` loading.
