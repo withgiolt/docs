@@ -25,6 +25,14 @@ For a walkthrough from a fresh project, see [Get started](/get-started).
 | `giolt build [--config FILE]`                               | Checks `handle`, compiles and bundles into `outdir`.                                                      |
 | `giolt dev [--config FILE]`                                 | Builds, watches, serves on `port` and reloads on change. JavaScript target only, except for static sites. |
 | `giolt deploy [--preview] [--artifact DIR] [--config FILE]` | Builds, then uploads `outdir` to Giolt. With `artifact`, uploads that directory instead.                  |
+| `giolt login [--token -]`                                   | Signs in through the browser, or stores a dashboard token read from stdin.                                |
+| `giolt logout`                                              | Revokes the stored token and deletes it.                                                                  |
+| `giolt whoami`                                              | Shows the signed-in account, the token and where it came from.                                            |
+| `giolt projects`                                            | Lists your projects.                                                                                      |
+| `giolt projects create NAME`                                | Creates a project.                                                                                        |
+| `giolt projects rename OLD NEW`                             | Renames a project, which changes its URL.                                                                 |
+| `giolt projects delete NAME [--yes]`                        | Deletes a project after you type its name.                                                                |
+| `giolt usage`                                               | Shows your account's requests this billing period.                                                        |
 | `giolt --help`                                              | Prints the commands. `giolt <command> --help` prints that command's flags.                                |
 
 A command that fails exits non-zero, so it works in CI and in scripts.
@@ -91,7 +99,8 @@ artifact = "./site"
 - **`live_reload`** — defaults to `true`. Pushes browser reloads over SSE after a
   rebuild.
 - **`api_url`** — defaults to `https://dash.giolt.com`. The API `deploy` talks to. The
-  `GIOLT_API_URL` environment variable takes precedence.
+  `GIOLT_API_URL` environment variable takes precedence. The account and project
+  commands don't read it; see Signing in below.
 - **`prebuild`** — defaults to none. A shell command that runs before every build,
   including each rebuild in `dev`. Use it for code generation or a static site step.
 - **`artifact`** — defaults to none. A directory to deploy as a static site, with no
@@ -170,6 +179,98 @@ Everything under `<outdir>/static/` uploads as a static asset, everything else u
 as a Worker module. `assets` places your files under `static/` for you, and `giolt
 build` always adds the worker module outside it. To deploy with no Worker script at all,
 use `artifact`.
+
+## Signing in
+
+```sh
+gleam run -m giolt login
+```
+
+`giolt login` prints a code and a link, and opens the link in your browser:
+
+```
+Your login code is ABCD-EFGH
+Approve it at https://dash.giolt.com/device?code=ABCD-EFGH
+```
+
+Sign in to Giolt there, check that the code matches and approve it. The CLI then
+prints `Logged in as you@example.com.` and where it stored the token. The token is
+valid for 90 days. Logging in again replaces it and revokes the old one.
+
+On a machine with no browser, create a token on the dashboard's
+[Tokens](https://dash.giolt.com/tokens) page and pipe it in:
+
+```sh
+gleam run -m giolt login --token - < token.txt
+```
+
+`--token TOKEN` also works, but the token then ends up in your shell history. A
+project's deploy key can't be stored this way; use it through `GIOLT_TOKEN` instead.
+
+### Where the token is kept
+
+| System       | File                                                                             |
+| ------------ | -------------------------------------------------------------------------------- |
+| Linux, macOS | `$XDG_CONFIG_HOME/giolt/credentials.json`, or `~/.config/giolt/credentials.json` |
+| Windows      | `%APPDATA%\giolt\credentials.json`                                               |
+
+Only your user can read the file or its directory.
+
+### `GIOLT_TOKEN`
+
+When `GIOLT_TOKEN` is set, every command uses it instead of the stored token. It can
+hold a dashboard token or a project's deploy key. A deploy key only works for
+`giolt deploy`; the account and project commands refuse it.
+
+### Which API the commands talk to
+
+A stored token is always sent back to the API it was created on. A token from
+`GIOLT_TOKEN` goes to `GIOLT_API_URL`, or to `https://dash.giolt.com` when that is unset.
+The `api_url` key in `gleam.toml` only applies to `giolt deploy`.
+
+### `giolt whoami` and `giolt logout`
+
+`giolt whoami` prints your email, the token's name, expiry and scopes, whether it came
+from `GIOLT_TOKEN` or the stored file, and the API URL.
+
+`giolt logout` revokes the stored token, then deletes the file. If Giolt can't be
+reached, it deletes the file anyway and warns that the token may still work: revoke it
+on the [Tokens](https://dash.giolt.com/tokens) page. It never touches `GIOLT_TOKEN`.
+
+## `giolt projects`
+
+```sh
+gleam run -m giolt projects
+```
+
+Lists each project's name, URL and latest deployment status. A project's name is the
+first part of its URL: `my-app` serves at `my-app.giolt.app`. Names are 3 to 63
+lowercase letters, digits and hyphens, and can't start or end with a hyphen.
+
+```sh
+gleam run -m giolt projects create my-app
+gleam run -m giolt projects rename my-app my-new-name
+gleam run -m giolt projects delete my-new-name
+```
+
+- **`create`** fails when the name is taken or reserved, or when you already have 5
+  projects.
+- **`rename`** changes the URL straight away. The old address stops serving, with no
+  redirect.
+- **`delete`** asks you to type the project's name to confirm. It is permanent: the
+  project, its deployments and its URL are gone. `--yes` skips the prompt for scripts.
+  Without a terminal to ask in and without `--yes`, it refuses.
+
+Creating, renaming and deleting need an active subscription. Listing always works.
+
+## `giolt usage`
+
+```sh
+gleam run -m giolt usage
+```
+
+Shows how many requests your account has served in the current billing period, and the
+period's dates. Usage is counted for the whole account, not per project.
 
 ## Static sites
 
