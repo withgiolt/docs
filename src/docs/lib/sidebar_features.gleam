@@ -22,7 +22,9 @@ pub fn get_sidebar_features(current_path: String) {
       SidebarLink("Limits", "/limits", False, current_path:),
     ]),
     SidebarDropdown("API", [
-      SidebarLink("About API", "/api/about", False, current_path:),
+      SidebarLink("Overview", "/api/about", False, current_path:),
+      SidebarLink("Projects", "/api/projects", False, current_path:),
+      SidebarLink("Deploy", "/api/deploy", False, current_path:),
     ]),
     SidebarDropdown("GlowVM - EXPERIMENTAL", [
       SidebarLink("About GlowVM", "/glowvm/about", False, current_path:),
