@@ -34,7 +34,7 @@ For a walkthrough from a fresh project, see [Get started](/get-started).
 | `giolt projects delete NAME [--yes]`                                         | Deletes a project after you type its name.                                                                |
 | `giolt link NAME [--config FILE]`                                            | Links this directory to a project, so `deploy` knows where to go.                                         |
 | `giolt unlink [--config FILE]`                                               | Removes the link.                                                                                         |
-| `giolt usage`                                                                | Shows your account's requests this billing period.                                                        |
+| `giolt usage [--json]`                                                       | Shows your account's requests this billing period.                                                        |
 | `giolt --help`                                                               | Prints the commands. `giolt <command> --help` prints that command's flags.                                |
 
 A command that fails exits non-zero, so it works in CI and in scripts.
@@ -300,8 +300,21 @@ project doesn't break it.
 gleam run -m giolt usage
 ```
 
-Shows how many requests your account has served in the current billing period, and the
-period's dates. Usage is counted for the whole account, not per project.
+Shows how many requests your account has served in the current billing period, out of
+the requests your plan includes, and the period's dates. Usage is counted for the whole
+account, not per project.
+
+```
+Requests: 1234 of 1000000
+Period:   2026-11-01T00:00:00Z to 2026-12-01T00:00:00Z
+```
+
+Pass `--json` to print the same fields as the [API](/api/projects) for
+scripts and agents: `requests`, `included`, `period_start` and `period_end`. The dates are
+`null` for an account that hasn't subscribed yet.
+
+It needs a login or a token with the `projects:read` scope. A project's deploy key can't
+read usage.
 
 ## Static sites
 

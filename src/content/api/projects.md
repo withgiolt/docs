@@ -162,10 +162,18 @@ Scope: `projects:read`. Usage is counted for the whole account, not per project.
 ```json
 {
   "requests": 1234,
+  "included": 1000000,
   "period_start": "2026-11-01T00:00:00Z",
   "period_end": "2026-12-01T00:00:00Z"
 }
 ```
 
 `requests` is the number of requests served across all your projects in the current
-billing period, which runs from `period_start` to `period_end`.
+billing period, which runs from `period_start` to `period_end`. `included` is how many
+requests your plan covers each period.
+
+An account that hasn't subscribed yet has used nothing: `requests` is `0` and both dates
+are `null`.
+
+A deploy key can't read usage, because usage belongs to the account and a deploy key is
+limited to one project. Use a token with the `projects:read` scope.
