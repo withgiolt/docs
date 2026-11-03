@@ -19,10 +19,13 @@ pub fn get_sidebar_features(current_path: String) {
       SidebarLink("Home", "/", False, current_path:),
       SidebarLink("Get started", "/get-started", False, current_path:),
       SidebarLink("CLI", "/cli", False, current_path:),
+      SidebarLink("Deploy from CI", "/ci", False, current_path:),
       SidebarLink("Limits", "/limits", False, current_path:),
     ]),
     SidebarDropdown("API", [
-      SidebarLink("About API", "/api/about", False, current_path:),
+      SidebarLink("Overview", "/api/about", False, current_path:),
+      SidebarLink("Projects", "/api/projects", False, current_path:),
+      SidebarLink("Deploy", "/api/deploy", False, current_path:),
     ]),
     SidebarDropdown("GlowVM - EXPERIMENTAL", [
       SidebarLink("About GlowVM", "/glowvm/about", False, current_path:),
