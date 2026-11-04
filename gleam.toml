@@ -22,7 +22,7 @@ smalto_lustre_themes = ">= 3.0.0 and < 4.0.0"
 conversation = ">= 2.0.2 and < 3.0.0"
 
 [dev-dependencies]
-giolt = ">= 0.2.0 and < 1.0.0"
+giolt = ">= 0.4.1 and < 1.0.0"
 
 [tools.giolt]
 # The site is generated into dist/static by `gleam run -m build`, which is
