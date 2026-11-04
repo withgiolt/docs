@@ -25,6 +25,7 @@ conversation = ">= 2.0.2 and < 3.0.0"
 giolt = ">= 0.4.1 and < 1.0.0"
 
 [tools.giolt]
+project = 3
 # The site is generated into dist/static by `gleam run -m build`, which is
 # what `prebuild` runs before every build, deploy and dev rebuild.
 artifact = "./dist/static"
