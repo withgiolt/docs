@@ -31,8 +31,8 @@ GlowVM's own (much longer) list.
 
 ## Billing & usage
 
-Deploying requires an active subscription ($5/month, 1,000,000 requests included, then
-$0.50 per additional million). If the subscription lapses, every route on the project —
+Deploying requires an active subscription (5€/month, 1,000,000 requests included, then
+1€ per additional million). If the subscription lapses, every route on the project —
 including ones a static asset used to serve — starts returning a 402 placeholder page
 until it's resumed; nothing is deleted, and the project's own content serves again as
 soon as billing is current. See your usage any time in the dashboard under Settings, or with `giolt usage`.
