@@ -6,7 +6,7 @@ title = "Projects"
 
 Routes for your account and its projects. All of them live under
 `https://dash.giolt.com/api/v1` and need a login or API token; see
-[API overview](/api/about). A deploy key can't call them.
+[API overview](/api/about).
 
 ## The project object
 
@@ -41,8 +41,6 @@ Routes for your account and its projects. All of them live under
 
 A slug is 3 to 63 characters of lowercase letters, digits and hyphens, and can't start
 or end with a hyphen. Some names are reserved and answer `409 slug_reserved`.
-
-The API never returns a project's deploy key. Copy it from the dashboard.
 
 ## Get the signed-in account
 
@@ -175,5 +173,4 @@ requests your plan covers each period.
 An account that hasn't subscribed yet has used nothing: `requests` is `0` and both dates
 are `null`.
 
-A deploy key can't read usage, because usage belongs to the account and a deploy key is
-limited to one project. Use a token with the `projects:read` scope.
+Reading usage needs a token with the `projects:read` scope.

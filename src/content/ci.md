@@ -19,15 +19,11 @@ gleam run -m giolt link my-app
 
 ## 2. Create a token
 
-Pick one:
-
-- **An API token with the `deploy` scope.** Create it on the dashboard's
-  [Tokens](https://dash.giolt.com/tokens) page and give it only `deploy`. It can deploy
-  any project in your account, so one token covers several projects. It expires after
-  the time you choose, unless you choose never.
-- **The project's deploy key.** Copy it from the project's page in the dashboard. It can
-  only deploy that one project. Deploy keys you already use keep
-  working, with or without a link.
+Create an API token with the `deploy` scope on the dashboard's
+[Tokens](https://dash.giolt.com/tokens) page and give it only `deploy`. It can deploy
+any project in your account, so one token covers several projects. It expires after
+the time you choose, unless you choose never. To replace a token, use Rotate on the
+same page: it makes a copy with the same scopes and expiry and revokes the old one.
 
 Store it as a secret in your CI provider, never in the repository.
 
@@ -50,8 +46,7 @@ For example, on GitHub Actions:
 
 The job needs Gleam and Node 20 or newer installed, the same as on your machine.
 
-To deploy a project other than the linked one, pass `--project NAME`. That needs an API
-token; a deploy key only deploys its own project.
+To deploy a project other than the linked one, pass `--project NAME`.
 
 A failed deploy exits non-zero, so the job fails with it. See [Limits](/limits) for
 what isn't supported yet.

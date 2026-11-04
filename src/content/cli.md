@@ -172,8 +172,8 @@ serving the last worker it loaded.
 gleam run -m giolt deploy
 ```
 
-- **`--project NAME`** — deploy to this project instead of the linked one. It needs a
-  login or API token, not a deploy key.
+- **`--project NAME`** — deploy to this project instead of the linked one. The CLI
+  looks the name up with your login or API token.
 - **`--preview`** — not implemented yet; the platform rejects it with a 400 ("Preview
   deployments aren't supported yet."). See [Limits](/limits).
 - **`--artifact DIR`** — deploy this directory as a static site, skipping the build.
@@ -182,13 +182,12 @@ gleam run -m giolt deploy
 in below. It picks the project from `--project`, then from the `project` key that
 `giolt link` writes:
 
-| Token                       | No project set                  | Linked with `giolt link`               | `--project NAME` |
-| --------------------------- | ------------------------------- | -------------------------------------- | ---------------- |
-| Login or API token          | fails: link or pass `--project` | deploys the linked project             | deploys `NAME`   |
-| Deploy key in `GIOLT_TOKEN` | deploys the key's project       | deploys it, if it is the key's project | fails            |
+| No project set                  | Linked with `giolt link`   | `--project NAME` |
+| ------------------------------- | -------------------------- | ---------------- |
+| fails: link or pass `--project` | deploys the linked project | deploys `NAME`   |
 
-A deploy key with no project set works exactly as it always has, so existing CI setups
-keep working. There is no `.env` loading.
+A token covers your whole account, so it never names a project by itself. There is no
+`.env` loading.
 
 Module paths starting with `__giolt` are reserved and rejected — the platform's own
 metering shim uses that prefix.
@@ -224,8 +223,8 @@ On a machine with no browser, create a token on the dashboard's
 gleam run -m giolt login --token - < token.txt
 ```
 
-`--token TOKEN` also works, but the token then ends up in your shell history. A
-project's deploy key can't be stored this way; use it through `GIOLT_TOKEN` instead.
+`--token TOKEN` also works, but the token then ends up in your shell history. The
+CLI refuses a value that doesn't start with `giolt_`.
 
 ### Where the token is kept
 
@@ -238,9 +237,9 @@ Only your user can read the file or its directory.
 
 ### `GIOLT_TOKEN`
 
-When `GIOLT_TOKEN` is set, every command uses it instead of the stored token. It can
-hold a dashboard token or a project's deploy key. A deploy key only works for
-`giolt deploy`; the account and project commands refuse it.
+When `GIOLT_TOKEN` is set, every command uses it instead of the stored token. It holds
+a token made on the dashboard's [Tokens](https://dash.giolt.com/tokens) page, which is
+how CI signs in; see [Deploy from CI](/ci).
 
 ### Which API the commands talk to
 
@@ -293,7 +292,7 @@ gleam run -m giolt link my-app
 Looks up the project by name and writes its id as `project = 7` under `[tools.giolt]`
 in `gleam.toml`, or in the `--config` file. The rest of the file, comments included, is
 left as it is. Commit the change so CI deploys to the same project. `giolt link` needs a
-login or API token, because a deploy key can't look projects up.
+login or an API token with the `projects:read` scope.
 
 `giolt unlink` removes the line. The link stores the id, not the name, so renaming the
 project doesn't break it.
@@ -317,8 +316,7 @@ Pass `--json` to print the same fields as the [API](/api/projects) for
 scripts and agents: `requests`, `included`, `period_start` and `period_end`. The dates are
 `null` for an account that hasn't subscribed yet.
 
-It needs a login or a token with the `projects:read` scope. A project's deploy key can't
-read usage.
+It needs a login or a token with the `projects:read` scope.
 
 ## Static sites
 

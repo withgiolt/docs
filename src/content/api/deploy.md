@@ -11,9 +11,8 @@ build your bundle some other way.
 POST /api/v1/projects/{id}/deployments
 ```
 
-Authenticate with a login or API token that has the `deploy` scope, or with that
-project's deploy key; see [API overview](/api/about). Deploying needs
-an active subscription. A deploy goes straight to production and replaces the version
+Authenticate with a login or API token that has the `deploy` scope; see
+[API overview](/api/about). Deploying needs an active subscription. A deploy goes straight to production and replaces the version
 that is live.
 
 ## Request
@@ -80,12 +79,12 @@ path that caused it.
 | 400    | `invalid_request`   | invalid JSON or base64, a duplicate or reserved path, no `index.mjs`, `spa` with modules, or nothing to deploy |
 | 400    | `not_implemented`   | `preview` is `true`                                                                                            |
 | 402    | `billing_required`  | the account has no active subscription                                                                         |
-| 403    | `forbidden`         | the token lacks `deploy`, or the deploy key belongs to another project                                         |
+| 403    | `forbidden`         | the token lacks `deploy`                                                                                       |
 | 413    | `payload_too_large` | over one of the limits above                                                                                   |
 | 502    | `upstream_failed`   | Giolt couldn't finish the deploy; try again                                                                    |
 
 ## Older CLIs
 
-`giolt` versions from before the project API post to `POST /api/deploy` with a deploy
-key. That route keeps working with the same request body. It answers `200` instead of
-`201`, and its errors are plain text instead of JSON.
+`giolt` 0.4.2 and earlier post to `POST /api/deploy` with a project deploy key. Deploy
+keys and that route no longer exist, so those versions can't deploy. Update to 0.5.0 or
+later and sign in with `giolt login` or a token.

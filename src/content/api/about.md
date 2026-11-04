@@ -26,21 +26,17 @@ curl https://dash.giolt.com/api/v1/me \
   -H "Authorization: Bearer $GIOLT_TOKEN"
 ```
 
-There are three kinds of credential:
+There are two kinds of credential:
 
-| Credential  | Made by                                                    | Acts on                         |
-| ----------- | ---------------------------------------------------------- | ------------------------------- |
-| Login token | `giolt login`                                              | every project in your account   |
-| API token   | the [Tokens](https://dash.giolt.com/tokens) dashboard page | every project in your account   |
-| Deploy key  | each project's page in the dashboard                       | deploying that one project only |
+| Credential  | Made by                                                    | Acts on                       |
+| ----------- | ---------------------------------------------------------- | ----------------------------- |
+| Login token | `giolt login`                                              | every project in your account |
+| API token   | the [Tokens](https://dash.giolt.com/tokens) dashboard page | every project in your account |
 
-Login and API tokens start with `giolt_`. Both are tied to your account and carry a
-set of scopes. A login token expires after 90 days. An API token expires after 30, 90 or
+Both start with `giolt_`, are tied to your account and carry a set of scopes. A login token expires after 90 days. An API token expires after 30, 90 or
 365 days, or never, as you choose when you create it. You can revoke either kind on the
 Tokens page, and `giolt logout` revokes its own login token. The dashboard shows a token
 once, when it is created.
-
-A deploy key works only for deploying its own project; every other route answers `403`.
 
 Tokens are managed only in the dashboard. No API route creates, lists or revokes other
 tokens, so a leaked token can't be used to make more.
@@ -53,8 +49,7 @@ tokens, so a leaked token can't be used to make more.
 | `projects:write` | creating, renaming and deleting projects |
 | `deploy`         | deploying any project in the account     |
 
-`giolt login` asks for all three. For CI, create an API token with `deploy` only, or use
-the project's deploy key.
+`giolt login` asks for all three. For CI, create an API token with `deploy` only.
 
 ### Signing in from a terminal
 
@@ -78,7 +73,7 @@ the project's deploy key.
 A device code is valid for 10 minutes and can be used once.
 
 To sign out, `DELETE /api/v1/auth/token` revokes the token that sent the request and
-returns `204`. A deploy key gets `403`.
+returns `204`.
 
 ## Errors
 
@@ -101,7 +96,7 @@ and is safe to show as it is.
 | 400    | `invalid_request`, `invalid_slug`, `not_implemented` | the body is malformed, or asks for something not built yet            |
 | 401    | `unauthorized`                                       | the token is missing, unknown, expired or revoked                     |
 | 402    | `billing_required`                                   | the account has no active subscription                                |
-| 403    | `forbidden`                                          | the token lacks the scope, or a deploy key is used on another project |
+| 403    | `forbidden`                                          | the token lacks the scope                                             |
 | 404    | `not_found`                                          | no such project in your account                                       |
 | 409    | `slug_taken`, `slug_reserved`, `project_limit`       | the name is in use or reserved, or you have 5 projects                |
 | 413    | `payload_too_large`                                  | the deploy is over a size limit                                       |
