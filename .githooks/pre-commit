@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Formats the tree and restages what was already staged, so `just check`
+# (gleam format --check, bun fmt --check) cannot fail in CI over formatting.
+set -euo pipefail
+
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$staged" ] && exit 0
+
+just format
+
+# Restage only files that were part of this commit, never unrelated edits.
+echo "$staged" | xargs -d '\n' git add --
