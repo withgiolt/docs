@@ -2,8 +2,6 @@
 title = "Giolt Docs"
 ---
 
-<div class="mt-32"></div>
-
 # Giolt Docs
 
 Documentation, guides and resources to help you build with Giolt.

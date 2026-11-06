@@ -1,26 +1,23 @@
+import docs/components/session
 import docs/views/default_layout
 import lustre/attribute
 import lustre/element/html
 
 pub fn element() {
-  default_layout.element("/404", "Page not found", [
-    html.div(
-      [
-        attribute.class(
-          "container pt-24 flex flex-col items-center text-center gap-4",
-        ),
-      ],
-      [
-        html.h1([attribute.class("font-pixel text-5xl")], [
-          html.text("404"),
-        ]),
-        html.p([attribute.class("text-base-content/70")], [
+  default_layout.element(
+    current_path: "/404",
+    title: "Page not found",
+    edit_path: "",
+    children: [
+      session.body([attribute.class("flex flex-col items-start gap-6")], [
+        session.title([html.text("404")]),
+        html.p([attribute.class("text-lg")], [
           html.text("This page doesn't exist."),
         ]),
         html.a([attribute.class("btn btn-primary"), attribute.href("/")], [
           html.text("Back home"),
         ]),
-      ],
-    ),
-  ])
+      ]),
+    ],
+  )
 }

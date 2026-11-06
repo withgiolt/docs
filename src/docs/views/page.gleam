@@ -1,7 +1,9 @@
+import docs/components/session
+import docs/components/toc
+import docs/lib/markdown_renderer.{type Heading}
 import docs/views/default_layout
 import gleam/dict
 import gleam/result
-import lucide_lustre
 import lustre/attribute
 import lustre/element
 import lustre/element/html
@@ -11,6 +13,7 @@ pub type Page {
   Page(
     frontmatter: dict.Dict(String, tom.Toml),
     content: String,
+    headings: List(Heading),
     current_path: String,
   )
 }
@@ -19,37 +22,41 @@ pub fn element(page: Page) {
   let title =
     tom.get_string(page.frontmatter, ["title"]) |> result.unwrap("Giolt Docs")
 
-  default_layout.element(page.current_path, title, [
-    html.div([attribute.class("container pt-8")], [
-      element.unsafe_raw_html(
-        "",
-        "article",
+  // The home page is src/content/index.md but is served at "/".
+  let edit_path = case page.current_path {
+    "/" -> "/index"
+    path -> path
+  }
+
+  default_layout.element(
+    current_path: page.current_path,
+    title:,
+    edit_path:,
+    children: [
+      html.div(
         [
           attribute.class(
-            "prose prose-neutral dark:prose-invert max-w-none "
-            <> "prose-headings:font-pixel prose-h1:text-5xl "
-            <> "prose-pre:bg-base-200 prose-pre:text-base-content prose-pre:border prose-pre:border-base-300",
+            "grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_14rem] gap-x-10 gap-y-6",
           ),
         ],
-        page.content,
-      ),
-      html.div([attribute.class("my-8")], [
-        html.a(
-          [
-            attribute.class("flex flex-row items-center gap-2 link text-sm"),
-            attribute.target("_blank"),
-            attribute.href(
-              "https://github.com/withgiolt/docs/edit/main/src/content"
-              <> page.current_path
-              <> ".md",
+        [
+          session.body([attribute.class("flex flex-col gap-6")], [
+            toc.collapsible(page.headings),
+            element.unsafe_raw_html(
+              "",
+              "article",
+              [
+                attribute.class(
+                  "prose prose-neutral dark:prose-invert max-w-none "
+                  <> "prose-pre:border prose-pre:border-base-300",
+                ),
+              ],
+              page.content,
             ),
-          ],
-          [
-            lucide_lustre.pen([attribute.class("size-4")]),
-            html.p([], [html.text("Edit page")]),
-          ],
-        ),
-      ]),
-    ]),
-  ])
+          ]),
+          toc.column(page.headings),
+        ],
+      ),
+    ],
+  )
 }

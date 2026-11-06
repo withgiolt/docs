@@ -62,7 +62,7 @@
   --color-success: oklch(60% 0.118 184.704);
   --color-success-content: oklch(98% 0.014 180.72);
   --color-warning: oklch(66% 0.179 58.318);
-  --color-warning-content: oklch(98% 0.022 95.277);
+  --color-warning-content: oklch(21% 0.006 56.043);
   --color-error: oklch(58% 0.253 17.585);
   --color-error-content: oklch(96% 0.015 12.422);
   --radius-selector: 0;
@@ -77,58 +77,236 @@
 
 @custom-variant dark (@media (prefers-color-scheme: dark));
 
+/* clip rather than hidden: hidden makes body a scroll container that never
+   scrolls, and the sticky table of contents would stick to it instead of the
+   viewport. */
 html,
 body {
-  @apply min-h-svh overflow-x-hidden bg-base-100 scroll-smooth;
+  @apply min-h-svh overflow-x-clip bg-base-100 scroll-smooth;
 }
 
-/* geist-pixel-latin-elsh-normal */
+/* The fonts are served from this site rather than a third-party CDN, so a page
+   does not wait on a second origin. This is not the upstream Geist Pixel file.
+   Upstream draws each pixel as its own square, 10,406 contours in all, and has
+   a variation axis the site never sets. This build pins the axis and merges the
+   squares, leaving 190 contours that render within 2/255 of upstream per pixel.
+   Rebuild it when updating the font, with fonttools, skia-pathops and brotli
+   installed:
+   fonttools varLib.instancer upstream.woff2 ELSH=0 --remove-overlaps */
 @font-face {
   font-family: "Geist Pixel Variable";
   font-style: normal;
   font-display: swap;
   font-weight: 400;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist-pixel:vf@5.3.1/latin-elsh-normal.woff2)
-    format("woff2-variations");
+  src: url(/fonts/geist-pixel-5.3.1-merged.woff2) format("woff2");
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
     U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
     U+2215, U+FEFF, U+FFFD;
 }
 
-/* geist-mono-latin-wght-normal */
 @font-face {
   font-family: "Geist Mono Variable";
   font-style: normal;
   font-display: swap;
   font-weight: 100 900;
-  src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist-mono:vf@5.3.0/latin-wght-normal.woff2)
-    format("woff2-variations");
+  src: url(/fonts/geist-mono-5.3.0.woff2) format("woff2-variations");
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
     U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
     U+2215, U+FEFF, U+FFFD;
 }
 
-@theme {
-  --font-sans: "Geist Mono Variable", monospace;
-  --font-mono: "Geist Mono Variable", monospace;
-  --font-pixel: "Geist Pixel Variable";
+/* Stand-ins that take up the same space as Geist, so the swap on a first visit
+   does not rewrap text. A face takes one size-adjust, so each local font needs
+   its own. size-adjust is Geist's average advance over the local font's, which
+   for Pixel is 502/1000 measured across headings. Overrides are Geist's ascent
+   and descent (100.5%, 29.5%) over size-adjust, which scales them again. */
+@font-face {
+  font-family: "Geist Mono Menlo";
+  src: local("Menlo Regular"), local("Menlo-Regular"), local("Menlo");
+  size-adjust: 99.67%;
+  ascent-override: 100.83%;
+  descent-override: 29.6%;
+  line-gap-override: 0%;
 }
 
-@utility container {
+@font-face {
+  font-family: "Geist Mono Consolas";
+  src: local("Consolas");
+  size-adjust: 109.13%;
+  ascent-override: 92.09%;
+  descent-override: 27.03%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Geist Pixel Menlo";
+  src: local("Menlo Regular"), local("Menlo-Regular"), local("Menlo");
+  size-adjust: 83.39%;
+  ascent-override: 120.52%;
+  descent-override: 35.38%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Geist Pixel Consolas";
+  src: local("Consolas");
+  size-adjust: 91.31%;
+  ascent-override: 110.06%;
+  descent-override: 32.31%;
+  line-gap-override: 0%;
+}
+
+@theme {
+  --font-sans:
+    "Geist Mono Variable", "Geist Mono Menlo", "Geist Mono Consolas", monospace;
+  --font-mono:
+    "Geist Mono Variable", "Geist Mono Menlo", "Geist Mono Consolas", monospace;
+  --font-pixel:
+    "Geist Pixel Variable", "Geist Pixel Menlo", "Geist Pixel Consolas",
+    monospace;
+}
+
+/* A page's column: the copy, then the table of contents beside it on wide
+   screens. */
+@utility docs-column {
   margin-inline: auto;
   padding-inline: 1.5rem;
-  max-width: 1024px;
+  max-width: 72rem;
 }
 
 a {
   @apply underline-offset-4;
 }
 
+/* The longhand: `text-wrap` also sets wrapping back on, and this rule sits outside
+   Tailwind's layers, so it would beat `truncate` and `whitespace-nowrap`. */
+p,
+dd,
+li {
+  text-wrap-style: pretty;
+}
+
 @utility highlight {
   border-radius: 85% 15% 81% 19% / 19% 86% 14% 81%;
+  padding-inline: 0.2em;
   @apply bg-primary text-base-100;
+}
+
+/* daisyUI buttons are 40px, under the 44px a thumb needs. */
+@media (pointer: coarse) {
+  .btn {
+    min-height: 2.75rem;
+  }
+}
+
+/* The text column, with a gutter for the # to hang in. */
+:root {
+  --session-inset: 2.25rem;
+}
+
+@media (width >= 48rem) {
+  :root {
+    --session-inset: 4rem;
+  }
+}
+
+.session-body {
+  padding-left: calc(var(--session-inset) - 1.5rem);
+}
+
+.session-sigil {
+  position: absolute;
+  right: 100%;
+  padding-right: 0.3ch;
+  opacity: 0.4;
+}
+
+/* The code surface, dark in both themes: ink on the light theme's page, and a
+   raised tier on the dark theme's, where inverting would make it a white
+   slab. */
+:root {
+  --terminal-bg: var(--color-neutral);
+  --terminal-fg: var(--color-neutral-content);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --terminal-bg: var(--color-base-200);
+    --terminal-fg: var(--color-base-content);
+  }
+}
+
+/* Markdown pages. Headings take the pixel type and sigil from here rather than
+   from markup. The empty alternative text keeps the # out of what screen
+   readers announce. */
+.prose :is(h1, h2, h3, h4) {
+  /* Clears the fixed bar that shows on small screens. */
+  scroll-margin-top: 5rem;
+}
+
+.prose :is(h1, h2) {
+  position: relative;
+  font-family: var(--font-pixel);
+  font-weight: 400;
+  text-wrap: balance;
+}
+
+.prose h1 {
+  font-size: 2.25rem;
+}
+
+.prose h2 {
+  font-size: 1.875rem;
+}
+
+@media (width >= 48rem) {
+  .prose h1 {
+    font-size: 3rem;
+  }
+}
+
+.prose :is(h1, h2)::before {
+  content: "#" / "";
+  position: absolute;
+  right: 100%;
+  padding-right: 0.3ch;
+  opacity: 0.4;
+}
+
+.prose pre {
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
+  border-radius: 0;
+}
+
+/* A rule on the left per entry, darkening on hover and focus. There is no
+   marker for the heading being read: that would take a script, and the page
+   works without one. */
+.toc-link {
+  display: block;
+  padding: 0.25rem 0 0.25rem 0.75rem;
+  border-left: 1px solid color-mix(in oklab, currentColor 20%, transparent);
+  opacity: 0.7;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.toc-link[data-level="3"] {
+  padding-left: 1.5rem;
+}
+
+.toc-link:hover,
+.toc-link:focus-visible {
+  border-left-color: currentColor;
+  opacity: 1;
+}
+
+/* :where keeps this below daisyUI's own button and link rings. */
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 ::selection {
@@ -137,4 +315,29 @@ a {
 
 @view-transition {
   navigation: auto;
+}
+
+.prose h1 {
+  margin-bottom: 1.5rem;
+}
+
+/* The page clips sideways overflow, so a table wider than the screen has to
+   scroll on its own or its right-hand columns can't be reached. */
+.prose table {
+  display: block;
+  overflow-x: auto;
+}
+
+/* The heading's own type and size, not an inline-code chip inside it. daisyUI sets
+   the chip with :root in its selector, so this one needs it too. */
+:root .prose :is(h1, h2, h3, h4) code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+}
+
+/* A long inline command or path breaks rather than running off a phone's edge. */
+.prose :not(pre) > code {
+  overflow-wrap: anywhere;
 }

@@ -10,6 +10,10 @@ pub fn container(content: String) {
     )
 
   document.HtmlBlock(
-    "<div class=\"alert alert-info\">" <> icon <> "<div>" <> content <> "</div></div>",
+    "<div class=\"alert alert-info\">"
+    <> icon
+    <> "<div>"
+    <> content
+    <> "</div></div>",
   )
 }

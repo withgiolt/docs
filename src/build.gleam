@@ -67,13 +67,14 @@ fn get_pages(dir: String) {
     }
       as "Failed to parse toml"
 
-    let parsed_content = markdown_renderer.parse(extracted.content)
+    let rendered = markdown_renderer.parse(extracted.content)
 
     #(
       path,
       page.Page(
         frontmatter: parsed,
-        content: parsed_content,
+        content: rendered.html,
+        headings: rendered.headings,
         current_path: current_path,
       ),
     )
