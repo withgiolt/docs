@@ -21,7 +21,7 @@ target = "erlang"
 wisp = ">= 2.2.2 and < 3.0.0"
 
 [dev-dependencies]
-giolt = ">= 0.1.0 and < 1.0.0"
+giolt = ">= 0.5.1 and < 1.0.0"
 ```
 
 GlowVM apps are written as [wisp](https://hexdocs.pm/wisp) handlers. You do not depend on `glowvm`

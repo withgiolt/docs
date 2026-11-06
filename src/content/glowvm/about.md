@@ -9,8 +9,8 @@ WebAssembly with WASI bindings, plus additional shims and NIFs to improve compat
 and common OTP libraries.
 
 > [!WARNING]
-> Giolt and GlowVM are work in progress and not yet published. The SDK, runtime and docs are all evolving
-> — expect breaking changes. Not ready for production use.
+> GlowVM is experimental. The runtime, the `giolt` build for it and these docs are all evolving, so
+> expect breaking changes. Not ready for production use.
 
 New to GlowVM? See [How to use GlowVM](/glowvm/how-to-use) for a walkthrough of packing and
 deploying an app.
@@ -34,7 +34,7 @@ full OTP / BEAM parity.
 
 ### 1. Inherited AtomVM VM limits
 
-See also upstream docs: [Differences between AtomVM and BEAM](https://doc.atomvm.org/latest/differences.html)
+See also upstream docs: [Differences between AtomVM and BEAM](https://doc.atomvm.org/latest/differences-with-beam.html)
 and [Programmers Guide - Limitations](https://doc.atomvm.org/latest/programmers-guide.html).
 
 - **BEAM subset:** Not all BEAM opcodes and runtime features are implemented. Code hot-swapping, `on_load`
@@ -56,9 +56,16 @@ AtomVM ships a minimal `stdlib`/`kernel`/`erts`. GlowVM adds shims for commonly 
 but coverage is still partial.
 
 - **Missing modules/functions fail with** `undef` (`:undef` / `{error, undef}`) at runtime — e.g.
-  parts of `crypto`, `ssl`, `ets` (limited in AtomVM 0.6.x, improved in 0.7.0-alpha),
+  most of `crypto`, `ssl`, `ets` (limited in AtomVM 0.6.x, improved in 0.7.0-alpha),
   `logger`, `rand`, `file`/`filelib`, and some `erlang` BIFs. Pure Gleam / pure Erlang libraries
   generally work; NIF-backed ones often don't.
+- **`crypto`:** Only `crypto:strong_rand_bytes/1` exists. `gleam_crypto` and wisp's signed cookies and
+  sessions, which call `crypto:hash/2` and `crypto:mac/4`, don't work.
+- **Crashes report opaquely.** An unhandled exception in a handler surfaces as
+  `Failed load module: init.beam` instead of the real reason, because the packer always strips `init`.
+- **Grapheme functions:** `gleam/string` treats graphemes as codepoints, so combining marks, emoji
+  ZWJ sequences and Hangul jamo don't cluster correctly. `uppercase` and `lowercase` cover ASCII,
+  Latin-1, Latin Extended-A, Greek and Cyrillic only.
 - **File system:** Only what WASI exposes is available and is sandboxed/ephemeral. No persistent
   host paths across requests unless Giolt explicitly exposes them. Libraries that touch the
   OS/filesystem like `simplifile` or `envoy` may be stubbed or no-ops.
@@ -95,8 +102,6 @@ working without code changes — just rebuild your pack.
 
 GlowVM is early. Roughly in priority order:
 
-- **Publish to Hex.** GlowVM is currently only usable as a `path`/git dependency; a tagged Hex release
-  is the next milestone.
 - **Track AtomVM** `0.7.0` **stable.** GlowVM currently pins `vendor/AtomVM` to `v0.7.0-alpha.1` for its
   improved `ets` support; it will move to the stable `0.7.0` tag once released.
 - **Wider stdlib/OTP coverage.** Closing `undef` gaps in `crypto`, `logger`, `rand`, and `file`/`filelib`
@@ -110,5 +115,5 @@ GlowVM is early. Roughly in priority order:
 - **Broader WASI host support.** Other WASI-compliant JS runtimes are being validated
   as they come up.
 
-Have a use case that needs something not listed here? Open an issue on
-[GitHub](https://github.com/withgiolt/glowvm).
+Have a use case that needs something not listed here? Open an issue in
+[withgiolt/issues](https://github.com/withgiolt/issues).

@@ -44,7 +44,8 @@ encoded as base64.
   only works on these.
 - Paths are compared after resolving `.` and `..`, so two paths that point at the same
   file are a duplicate.
-- Module paths starting with `__giolt` are reserved.
+- Paths starting with `__giolt`, in any letter case, are reserved for modules and assets
+  alike. So is a path that resolves above the root, such as `../x`.
 
 ## Limits
 

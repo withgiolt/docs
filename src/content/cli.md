@@ -189,8 +189,8 @@ in below. It picks the project from `--project`, then from the `project` key tha
 A token covers your whole account, so it never names a project by itself. There is no
 `.env` loading.
 
-Module paths starting with `__giolt` are reserved and rejected — the platform's own
-metering shim uses that prefix.
+Module and asset paths starting with `__giolt` are reserved and rejected. The
+platform's own metering code uses that prefix.
 
 ### How a deploy is split
 
@@ -250,8 +250,9 @@ between those two.
 
 ### `giolt whoami` and `giolt logout`
 
-`giolt whoami` prints your email, the token's name, expiry and scopes, whether it came
-from `GIOLT_TOKEN` or the stored file, and the API URL.
+`giolt whoami` prints your email, the token's name, expiry and scopes, and whether it
+came from `GIOLT_TOKEN` or the stored file. It adds the API URL when that isn't
+`https://dash.giolt.com`.
 
 `giolt logout` revokes the stored token, then deletes the file. If Giolt can't be
 reached, it deletes the file anyway and warns that the token may still work: revoke it

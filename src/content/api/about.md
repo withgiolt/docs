@@ -99,8 +99,9 @@ and is safe to show as it is.
 | 403    | `forbidden`                                          | the token lacks the scope                                             |
 | 404    | `not_found`                                          | no such project in your account                                       |
 | 409    | `slug_taken`, `slug_reserved`, `project_limit`       | the name is in use or reserved, or you have 5 projects                |
-| 413    | `payload_too_large`                                  | the deploy is over a size limit                                       |
 | 405    | `method_not_allowed`                                 | the path exists but not with this method; see the `Allow` header      |
+| 413    | `payload_too_large`                                  | the deploy is over a size limit                                       |
+| 429    | `rate_limited`                                       | too many requests; see [Rate limits](#rate-limits)                    |
 | 502    | `upstream_failed`                                    | Giolt couldn't finish the change; the `message` says whether to retry |
 
 A project that belongs to another account answers `404`, the same as one that doesn't
@@ -111,6 +112,13 @@ exist.
 Creating, renaming, deleting and deploying need an active subscription and return `402
 billing_required` without one. The message includes the link to fix it. Reading your
 account, projects and usage always works, so you can still see what you have.
+
+## Rate limits
+
+Requests are limited per token and per IP address, and the two device flow routes have
+their own limits. A request over a limit gets `429` with the code `rate_limited` and a
+`Retry-After` header holding the seconds to wait. Wait that long before you retry. The
+limits can change, so read the header rather than hard-coding a rate.
 
 ## Pagination
 

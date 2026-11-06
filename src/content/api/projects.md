@@ -48,7 +48,8 @@ or end with a hyphen. Some names are reserved and answer `409 slug_reserved`.
 GET /api/v1/me
 ```
 
-Any valid token works, whatever its scopes. This is what `giolt whoami` prints.
+Any valid token works, whatever its scopes. This is what `giolt whoami` prints. `email`
+is `null` when Giolt can't look it up at that moment.
 
 ```json
 {
@@ -108,12 +109,13 @@ curl https://dash.giolt.com/api/v1/projects \
 Returns `201` with the new project. The project has no deployment yet; see
 [Deploy](/api/deploy).
 
-| Status | `code`                        | When                               |
-| ------ | ----------------------------- | ---------------------------------- |
-| 400    | `invalid_slug`                | the slug breaks the rules above    |
-| 400    | `not_implemented`             | `target` is `erlang`               |
-| 409    | `slug_taken`, `slug_reserved` | the name isn't available           |
-| 409    | `project_limit`               | the account already has 5 projects |
+| Status | `code`                        | When                                                               |
+| ------ | ----------------------------- | ------------------------------------------------------------------ |
+| 400    | `invalid_request`             | the body is malformed, or `target` is not `javascript` or `erlang` |
+| 400    | `invalid_slug`                | the slug breaks the rules above                                    |
+| 400    | `not_implemented`             | `target` is `erlang`                                               |
+| 409    | `slug_taken`, `slug_reserved` | the name isn't available                                           |
+| 409    | `project_limit`               | the account already has 5 projects                                 |
 
 ## Rename a project
 

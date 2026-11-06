@@ -26,13 +26,15 @@ GlowVM's own (much longer) list.
 
 - **5 projects per account.** Creating a 6th fails outright; there's no way to raise
   this today.
-- **Module paths starting with `__giolt` are reserved** and rejected at deploy (400
-  "Module path uses a reserved name").
+- **Paths starting with `__giolt` are reserved** and rejected at deploy, for modules and
+  assets alike (400 "Module path uses a reserved name" or "Asset path uses a reserved
+  name").
 
 ## Billing & usage
 
-Deploying requires an active subscription (5€/month, 1,000,000 requests included, then
-1€ per additional million). If the subscription lapses, every route on the project —
+Deploying requires an active subscription (5€/month, with 1,000,000 requests included in
+each billing period). Charging for requests beyond that, planned at 1€ per additional
+million, isn't live yet. If the subscription lapses, every route on the project —
 including ones a static asset used to serve — starts returning a 402 placeholder page
 until it's resumed; nothing is deleted, and the project's own content serves again as
 soon as billing is current. See your usage any time in the dashboard under Settings, or with `giolt usage`.
