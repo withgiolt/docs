@@ -38,8 +38,20 @@ configure it, if you need to, under `[tools.giolt]` in your `gleam.toml`. It run
 default; add `--runtime bun` to run it on Bun:
 
 ```sh
-gleam run --runtime bun -m giolt --help
+gleam run --runtime bun -m giolt help
 ```
+
+If you'd rather not type `gleam run -m giolt` every time, install the CLI globally from
+npm and run `giolt` directly. It needs Node 20 or newer:
+
+```sh
+npm i -g @giolt/cli
+giolt build
+```
+
+You can also run it once without installing, with `npx @giolt/cli build`. The rest of this
+guide writes `gleam run -m giolt <command>`; with the global install, drop that prefix and
+type `giolt <command>`.
 
 ## 2. Write a handler
 

@@ -16,6 +16,23 @@ on Bun.
 gleam add --dev giolt
 ```
 
+Or install it globally from npm, so you can type `giolt <command>` instead of
+`gleam run -m giolt <command>`. It needs Node 20 or newer:
+
+```sh
+npm i -g @giolt/cli
+giolt build
+```
+
+`npx @giolt/cli <command>` runs it once without installing. With Bun, use
+`bun i -g @giolt/cli`; the installed script starts with `#!/usr/bin/env node`, so the
+machine still needs Node, or you can run `bunx --bun @giolt/cli <command>` instead.
+
+Everything on this page works the same either way. Examples write
+`gleam run -m giolt <command>`; with the global install, run `giolt <command>`. The
+global install also reads `-h` and `--help` itself, so `giolt -h` works, unlike
+`gleam run -m giolt -h`.
+
 For a walkthrough from a fresh project, see [Get started](/get-started).
 
 ## Commands
