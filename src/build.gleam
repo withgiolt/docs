@@ -16,6 +16,8 @@ import tom
 
 const static_dir = "./dist/static"
 
+const docs_url = "https://docs.giolt.com"
+
 /// Crashes on failure so `just build` and `just deploy` stop rather than
 /// shipping a half-built site. Callers that want to handle the error
 /// themselves — the dev server does — should use `build_all` instead.
@@ -118,11 +120,47 @@ fn build_static() -> Result(Nil, String) {
 
   case build {
     Ok(_) -> {
+      use _ <- result.try(build_llms_txt())
       io.println("Static pages built successfully")
       Ok(Nil)
     }
     Error(e) -> Error("Failed to build static pages: " <> e)
   }
+}
+
+// The agent page's markdown, then a link to every page. The text is read from
+// `agents.md`, so the file and the page can't differ, and the index is built
+// from the same frontmatter the site renders, so it can't miss a page.
+fn build_llms_txt() -> Result(Nil, String) {
+  use agents <- result.try(
+    simplifile.read("./src/content/agents.md")
+    |> result.map_error(fn(e) {
+      "Failed to read agents.md: " <> string.inspect(e)
+    }),
+  )
+
+  let index =
+    ["", ..get_content_dirs()]
+    |> list.flat_map(fn(dir) { dict.values(get_pages(dir)) })
+    |> list.sort(fn(a, b) { string.compare(a.current_path, b.current_path) })
+    |> list.map(fn(page) {
+      let title =
+        tom.get_string(page.frontmatter, ["title"]) |> result.unwrap("Giolt")
+      "- [" <> title <> "](" <> docs_url <> page.current_path <> ")"
+    })
+    |> string.join("\n")
+
+  // Links in the page are site-relative, which a plain-text reader can't resolve.
+  let page_text =
+    string.trim_end(frontmatter.extract(agents).content)
+    |> string.replace("](/", "](" <> docs_url <> "/")
+
+  let text = page_text <> "\n\n## All pages\n\n" <> index <> "\n"
+
+  simplifile.write(static_dir <> "/llms.txt", text)
+  |> result.map_error(fn(e) {
+    "Failed to write llms.txt: " <> string.inspect(e)
+  })
 }
 
 fn build_css() -> Result(Nil, String) {

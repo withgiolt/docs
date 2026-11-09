@@ -21,6 +21,7 @@ pub fn get_sidebar_features(current_path: String) {
       SidebarLink("CLI", "/cli", False, current_path:),
       SidebarLink("Deploy from CI", "/ci", False, current_path:),
       SidebarLink("Limits", "/limits", False, current_path:),
+      SidebarLink("For coding agents", "/agents", False, current_path:),
     ]),
     SidebarDropdown("API", [
       SidebarLink("Overview", "/api/about", False, current_path:),
