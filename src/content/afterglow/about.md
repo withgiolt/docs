@@ -29,8 +29,9 @@ Erlang. afterglow's tests compare its output with real `erl`.
 - **Missing functions.** Some OTP functions and NIFs aren't in afterglow yet. `giolt build` lists the
   ones your app reaches and still builds. A request that calls one gets a 500 whose body names it,
   such as `{"error":"afterglow does not implement crypto:mac/4"}`.
-- **`crypto`:** only `crypto:strong_rand_bytes/1`. `crypto:hash/2` and `crypto:mac/4` are missing, so
-  `gleam_crypto` hashing and HMAC, and wisp's signed cookies and sessions, don't work yet.
+- **`crypto`:** only `crypto:strong_rand_bytes/1`. `gleam_crypto` hashes through `crypto:hash_init/1`,
+  `crypto:hash_update/2` and `crypto:hash_final/1` and signs through `crypto:mac/4`, which are all
+  missing, so hashing, HMAC, and wisp's signed cookies and sessions don't work yet.
 - **No `ets` and no `re`.** Libraries that use ETS tables or regular expressions (`gleam_regexp`)
   fail with a missing-function 500.
 - **`erlang:phash2`** returns different values from Erlang/OTP, and small maps with atom keys can
