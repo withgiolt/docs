@@ -44,7 +44,7 @@ Erlang. afterglow's tests compare its output with real `erl`.
 - **No outbound HTTP** from Erlang code yet.
 
 The planned fixes are tracked in
-[withgiolt/afterglow#2](https://github.com/withgiolt/afterglow/issues/2).
+[withgiolt/issues#29](https://github.com/withgiolt/issues/issues/29).
 
 ## Practical guidance
 
@@ -55,4 +55,4 @@ The planned fixes are tracked in
 - **Keep state outside the request**, in a database or KV store.
 
 Have a use case that needs something not listed here? Open an issue in
-[withgiolt/afterglow](https://github.com/withgiolt/afterglow/issues).
+[withgiolt/issues](https://github.com/withgiolt/issues/issues).
