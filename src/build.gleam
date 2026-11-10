@@ -19,15 +19,13 @@ const static_dir = "./dist/static"
 const docs_url = "https://docs.giolt.com"
 
 /// Crashes on failure so `just build` and `just deploy` stop rather than
-/// shipping a half-built site. Callers that want to handle the error
-/// themselves — the dev server does — should use `build_all` instead.
+/// shipping a half-built site.
 pub fn main() -> Nil {
   let assert Ok(_) = build_all() as "Build failed"
   Nil
 }
 
-/// Builds the whole site: static pages, CSS, then the deployable bundle.
-pub fn build_all() -> Result(Nil, String) {
+fn build_all() -> Result(Nil, String) {
   use _ <- result.try(build_static())
   use _ <- result.try(build_css())
   Ok(Nil)

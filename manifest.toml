@@ -13,7 +13,6 @@ packages = [
   { name = "conversation", version = "2.0.2", build_tools = ["gleam"], requirements = ["gleam_http", "gleam_javascript", "gleam_stdlib"], otp_app = "conversation", source = "hex", outer_checksum = "60AFB424A723D5B29925487BCA66FF09EB157FD3EF72AF072714FEC903701226" },
   { name = "envie", version = "1.2.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "envie", source = "hex", outer_checksum = "E7EBA39310F32A40BF3EDDD7CD9C7A2BC289909983D357411C22873415BC322A" },
   { name = "envoy", version = "1.2.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "envoy", source = "hex", outer_checksum = "9C6FBB6BFA02A52798BEEC5977A738CAD6E4A057F4B67FD0C8061AD2502C191A" },
-  { name = "esgleam", version = "1.0.0", build_tools = ["gleam"], requirements = ["gleam_regexp", "gleam_stdlib", "simplifile"], source = "git", repo = "https://github.com/withgiolt/esgleam", commit = "59601173fb0a07502539bf081d6cf30107c90723" },
   { name = "exception", version = "2.1.1", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "exception", source = "hex", outer_checksum = "6BDEA95248093599391C3B5DF1835C5C6A86C353C2F99CE539B450E3432FE117" },
   { name = "filepath", version = "1.1.2", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "filepath", source = "hex", outer_checksum = "B06A9AF0BF10E51401D64B98E4B627F1D2E48C154967DA7AF4D0914780A6D40A" },
   { name = "frontmatter", version = "1.0.1", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "frontmatter", source = "hex", outer_checksum = "D7FF83A8D22A52867809681EE254A3F989169F92539299958879FE47737DAB7A" },
@@ -59,13 +58,10 @@ packages = [
 ]
 
 [requirements]
-conversation = { version = ">= 2.0.2 and < 3.0.0" }
 envie = { version = ">= 1.2.0 and < 2.0.0" }
-esgleam = { git = "https://github.com/withgiolt/esgleam", ref = "5960117" }
 frontmatter = { version = ">= 1.0.1 and < 2.0.0" }
 giolt = { version = ">= 0.5.1 and < 1.0.0" }
 glailglind = { version = ">= 2.3.0 and < 3.0.0" }
-gleam_http = { version = ">= 4.3.0 and < 5.0.0" }
 gleam_stdlib = { version = ">= 1.0.0 and < 2.0.0" }
 lucide_lustre = { version = ">= 2.0.3 and < 3.0.0" }
 lustre = { version = ">= 5.7.1 and < 6.0.0" }
