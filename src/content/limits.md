@@ -5,8 +5,8 @@ title = "Limits"
 # Limits
 
 What Giolt doesn't do yet, and the hard limits that apply to what it does. Everything
-here applies to the JavaScript-target platform; see [About GlowVM](/glowvm/about) for
-GlowVM's own (much longer) list.
+here applies to the JavaScript-target platform; see [About afterglow](/afterglow/about) for
+afterglow's own list.
 
 ## Not yet supported
 
