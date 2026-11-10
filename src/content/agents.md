@@ -78,8 +78,8 @@ gleam run -m giolt deploy
 - **Reserved paths.** Module and asset paths starting with `__giolt` are rejected.
 - **Limits.** 5 projects per account, 5,000 files and 32 MiB per deploy, 10 MiB per
   file.
-- **GlowVM.** Projects targeting `erlang` build for GlowVM, which `giolt dev` and
-  `giolt deploy` don't support yet. See [About GlowVM](/glowvm/about).
+- **afterglow.** Projects targeting `erlang` build with afterglow, which `giolt dev`
+  and `giolt deploy` don't support yet. See [About afterglow](/afterglow/about).
 
 ## Errors
 

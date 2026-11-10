@@ -72,7 +72,7 @@ pub fn handle(
 }
 ```
 
-On the Erlang target ([GlowVM](/glowvm/how-to-use)):
+On the Erlang target ([afterglow](/afterglow/how-to-use)):
 
 ```gleam
 pub fn handle(request: wisp.Request) -> wisp.Response
@@ -365,10 +365,12 @@ where your build writes to.
 
 ## Erlang target
 
-A project with `target = "erlang"` builds for GlowVM. `giolt build` needs Erlang/OTP and
+A project with `target = "erlang"` builds with afterglow. `giolt build` needs Erlang/OTP and
 rebar3 installed and tells you which one is missing. Run it with
-`gleam run --target javascript -m giolt build`, because giolt itself runs on JavaScript. `dev`
-and `deploy` do not support this target yet. See [How to use GlowVM](/glowvm/how-to-use).
+`gleam run --target javascript -m giolt build`, because giolt itself runs on JavaScript. The
+output is `app.wasm` and `index.js`, and the build lists any functions your app reaches that
+afterglow doesn't provide. `dev` and `deploy` do not support this target yet. See
+[How to use afterglow](/afterglow/how-to-use).
 
 ## Next steps
 

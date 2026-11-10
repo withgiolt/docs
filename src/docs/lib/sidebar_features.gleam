@@ -28,9 +28,9 @@ pub fn get_sidebar_features(current_path: String) {
       SidebarLink("Projects", "/api/projects", False, current_path:),
       SidebarLink("Deploy", "/api/deploy", False, current_path:),
     ]),
-    SidebarDropdown("GlowVM - EXPERIMENTAL", [
-      SidebarLink("About GlowVM", "/glowvm/about", False, current_path:),
-      SidebarLink("How to use", "/glowvm/how-to-use", False, current_path:),
+    SidebarDropdown("afterglow - EXPERIMENTAL", [
+      SidebarLink("About afterglow", "/afterglow/about", False, current_path:),
+      SidebarLink("How to use", "/afterglow/how-to-use", False, current_path:),
     ]),
   ]
 }
