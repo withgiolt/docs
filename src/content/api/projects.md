@@ -99,20 +99,20 @@ curl https://dash.giolt.com/api/v1/projects \
   -d '{ "slug": "my-app" }'
 ```
 
-| Field    | Type   | Required | Notes                                 |
-| -------- | ------ | -------- | ------------------------------------- |
-| `slug`   | string | yes      | the project name; see the rules above |
+| Field  | Type   | Required | Notes                                 |
+| ------ | ------ | -------- | ------------------------------------- |
+| `slug` | string | yes      | the project name; see the rules above |
 
 Returns `201` with the new project. The project has no deployment yet; see
 [Deploy](/api/deploy). A project isn't tied to a Gleam target: each deploy can be either one. A
 `target` field in the body is ignored.
 
-| Status | `code`                        | When                                                               |
-| ------ | ----------------------------- | ------------------------------------------------------------------ |
-| 400    | `invalid_request`             | the body is malformed                                              |
-| 400    | `invalid_slug`                | the slug breaks the rules above                                    |
-| 409    | `slug_taken`, `slug_reserved` | the name isn't available                                           |
-| 409    | `project_limit`               | the account already has 5 projects                                 |
+| Status | `code`                        | When                               |
+| ------ | ----------------------------- | ---------------------------------- |
+| 400    | `invalid_request`             | the body is malformed              |
+| 400    | `invalid_slug`                | the slug breaks the rules above    |
+| 409    | `slug_taken`, `slug_reserved` | the name isn't available           |
+| 409    | `project_limit`               | the account already has 5 projects |
 
 ## Rename a project
 
