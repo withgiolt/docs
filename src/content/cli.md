@@ -368,8 +368,9 @@ where your build writes to.
 A project with `target = "erlang"` builds with afterglow. `giolt build` needs Erlang/OTP and
 rebar3 installed and tells you which one is missing. Run it with
 `gleam run --target javascript -m giolt build`, because giolt itself runs on JavaScript. The
-output is `app.wasm` and `index.js`, and the build lists any functions your app reaches that
-afterglow doesn't provide. `dev` and `deploy` do not support this target yet. See
+output is `app.wasm`, `index.mjs` and `host.mjs`, plus `static/` when `assets` is set, and the build
+lists any functions your app reaches that afterglow doesn't provide. `deploy` uploads it like a
+JavaScript build. `dev` doesn't support this target yet. See
 [How to use afterglow](/afterglow/how-to-use).
 
 ## Next steps

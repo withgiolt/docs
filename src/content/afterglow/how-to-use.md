@@ -4,8 +4,8 @@ title = "How to use afterglow"
 
 # How to use afterglow
 
-This page walks through building a Gleam app for the Erlang target with afterglow and running the
-result locally.
+This page walks through building a Gleam app for the Erlang target with afterglow, running the
+result locally and deploying it to Giolt.
 
 > [!WARNING]
 > afterglow is experimental. You need Gleam, Erlang/OTP and rebar3 installed to build an app.
@@ -70,14 +70,16 @@ See [About afterglow](/afterglow/about) for what that means at request time.
 `dist/` contains:
 
 - `app.wasm`: your app and the afterglow runtime, compiled to WebAssembly
-- `index.js`: the Worker entry, which passes each request to `app.wasm`
+- `index.mjs`: the Worker entry, which passes each request to `app.wasm` through `host.mjs`
+- `host.mjs`: the code that runs `app.wasm` and converts requests and responses
+- `static/`: a copy of the `assets` directory, if you set one under `[tools.giolt]`
 
-Change the output directory with `outdir` under `[tools.giolt]`. `giolt dev` and `giolt deploy` don't
-support the Erlang target yet.
+Change the output directory with `outdir` under `[tools.giolt]`. `giolt dev` doesn't support the
+Erlang target yet.
 
 ## 4. Run it locally with Bun
 
-`index.js` uses `import wasm from "./app.wasm"`, which is how Cloudflare Workers load WebAssembly.
+`index.mjs` uses `import wasm from "./app.wasm"`, which is how Cloudflare Workers load WebAssembly.
 Bun needs a small plugin to do the same:
 
 ```ts
@@ -94,7 +96,7 @@ plugin({
   },
 });
 
-const { default: worker } = await import("./dist/index.js");
+const { default: worker } = await import("./dist/index.mjs");
 const response = await worker.fetch(new Request("http://localhost/"));
 console.log(response.status, await response.text());
 ```
@@ -103,9 +105,22 @@ console.log(response.status, await response.text());
 bun run your_script.ts
 ```
 
+## 5. Deploy it
+
+```sh
+gleam run --target javascript -m giolt deploy
+```
+
+`giolt deploy` builds the app and uploads `dist/` the same way it uploads a JavaScript app. Files in
+`static/` are served before requests reach your app, so put images, CSS and other static files in
+the `assets` directory rather than serving them with `wisp.serve_static`: the Wasm build has no
+file system to read them from.
+
 ## Environment variables
 
-`index.js` passes the Worker's environment to your app, so `envie` reads it as usual:
+The string values in the second argument of `fetch` become your app's environment, so `envie` reads
+them as usual. Giolt doesn't pass environment variables to deployed apps yet. Locally, pass them
+yourself, for example `worker.fetch(request, { SECRET_KEY: "secret" })`:
 
 ```gleam
 import envie

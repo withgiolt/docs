@@ -15,7 +15,6 @@ Routes for your account and its projects. All of them live under
   "id": 42,
   "slug": "my-app",
   "url": "https://my-app.giolt.app",
-  "target": "javascript",
   "suspended": false,
   "created_at": "2026-11-03T07:00:00Z",
   "updated_at": "2026-11-03T07:00:00Z",
@@ -32,7 +31,6 @@ Routes for your account and its projects. All of them live under
   this rather than the slug.
 - **`slug`** — the project's name, and the first part of its URL. The CLI calls it the
   project name.
-- **`target`** — `javascript`. `erlang` is not supported for deploys yet.
 - **`suspended`** — `true` while the account's subscription is inactive. A suspended
   project serves a placeholder page until billing is current again.
 - **`latest_deployment`** — `null` until the first deploy. Its `status` is `live` while
@@ -104,16 +102,15 @@ curl https://dash.giolt.com/api/v1/projects \
 | Field    | Type   | Required | Notes                                 |
 | -------- | ------ | -------- | ------------------------------------- |
 | `slug`   | string | yes      | the project name; see the rules above |
-| `target` | string | no       | defaults to `javascript`              |
 
 Returns `201` with the new project. The project has no deployment yet; see
-[Deploy](/api/deploy).
+[Deploy](/api/deploy). A project isn't tied to a Gleam target: each deploy can be either one. A
+`target` field in the body is ignored.
 
 | Status | `code`                        | When                                                               |
 | ------ | ----------------------------- | ------------------------------------------------------------------ |
-| 400    | `invalid_request`             | the body is malformed, or `target` is not `javascript` or `erlang` |
+| 400    | `invalid_request`             | the body is malformed                                              |
 | 400    | `invalid_slug`                | the slug breaks the rules above                                    |
-| 400    | `not_implemented`             | `target` is `erlang`                                               |
 | 409    | `slug_taken`, `slug_reserved` | the name isn't available                                           |
 | 409    | `project_limit`               | the account already has 5 projects                                 |
 
