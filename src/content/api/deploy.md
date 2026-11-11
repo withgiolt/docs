@@ -29,17 +29,19 @@ that is live.
 }
 ```
 
-| Field     | Type    | Required | Notes                                                                     |
-| --------- | ------- | -------- | ------------------------------------------------------------------------- |
-| `modules` | array   | yes      | the Worker's JavaScript modules; may be empty for a static site           |
-| `assets`  | array   | no       | static files, served as they are                                          |
-| `spa`     | boolean | no       | serve `index.html` for paths that match no asset; static sites only       |
-| `preview` | boolean | no       | `true` is rejected until preview deployments exist; see [Limits](/limits) |
+| Field     | Type    | Required | Notes                                                                          |
+| --------- | ------- | -------- | ------------------------------------------------------------------------------ |
+| `modules` | array   | yes      | the Worker's modules (JavaScript, and `.wasm`); may be empty for a static site |
+| `assets`  | array   | no       | static files, served as they are                                               |
+| `spa`     | boolean | no       | serve `index.html` for paths that match no asset; static sites only            |
+| `preview` | boolean | no       | `true` is rejected until preview deployments exist; see [Limits](/limits)      |
 
 Each file is `{ "path": "...", "content_base64": "..." }`, with the file's bytes
 encoded as base64.
 
-- A deploy with modules needs one at `index.mjs`, the Worker's entry.
+- A deploy with modules needs one at `index.mjs`, the Worker's entry. An Erlang-target build
+  uploads afterglow's `index.mjs` and `host.mjs` with `app.wasm`; a root `app.wasm` marks the
+  deployment as Erlang.
 - A deploy with no modules is a static site: its assets are served with no Worker. `spa`
   only works on these.
 - Paths are compared after resolving `.` and `..`, so two paths that point at the same

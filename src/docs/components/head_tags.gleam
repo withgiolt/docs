@@ -18,7 +18,7 @@ pub fn element(title title: String) {
     html.meta([
       attribute.name("description"),
       attribute.content(
-        "Giolt is the hosting platform for Gleam. Serverless hosting for the JavaScript target today, serverless BEAM soon. Join the waitlist.",
+        "Giolt is the hosting platform for Gleam. Serverless hosting for the JavaScript target, and the BEAM target in experimental support. Join the waitlist.",
       ),
     ]),
     html.meta([
