@@ -5,8 +5,8 @@ title = "Limits"
 # Limits
 
 What Giolt doesn't do yet, and the hard limits that apply to what it does. Everything
-here applies to the JavaScript-target platform; see [About afterglow](/afterglow/about) for
-afterglow's own list.
+here applies to deploys of either target; see [About afterglow](/afterglow/about) for what
+afterglow itself doesn't support.
 
 ## Not yet supported
 

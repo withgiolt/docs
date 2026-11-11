@@ -22,7 +22,7 @@ target = "erlang"
 wisp = ">= 2.2.2 and < 3.0.0"
 
 [dev-dependencies]
-giolt = ">= 0.6.0 and < 1.0.0"
+giolt = ">= 0.7.0 and < 1.0.0"
 ```
 
 afterglow apps are written as [wisp](https://hexdocs.pm/wisp) handlers. You don't depend on
