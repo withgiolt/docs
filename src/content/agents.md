@@ -80,7 +80,7 @@ gleam run -m giolt deploy
 - **Limits.** 5 projects per account, 5,000 files and 32 MiB per deploy, 10 MiB per
   file.
 - **afterglow.** Projects targeting `erlang` build with afterglow, which is experimental.
-  `giolt deploy` works for them and `giolt dev` doesn't yet. See
+  `giolt dev` and `giolt deploy` work for them. See
   [About afterglow](/afterglow/about).
 
 ## Errors

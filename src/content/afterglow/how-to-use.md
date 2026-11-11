@@ -8,7 +8,8 @@ This page walks through building a Gleam app for the Erlang target with afterglo
 result locally and deploying it to Giolt.
 
 > [!WARNING]
-> afterglow is experimental. You need Gleam, Erlang/OTP and rebar3 installed to build an app.
+> afterglow is experimental. You need Gleam, Erlang/OTP, rebar3, and Node.js 20+ or Bun installed
+> to build an app.
 > Building works on Linux and macOS (x64 and arm64) and Windows (x64).
 
 ## 1. Add the dependencies
@@ -22,7 +23,7 @@ target = "erlang"
 wisp = ">= 2.2.2 and < 3.0.0"
 
 [dev-dependencies]
-giolt = ">= 0.7.0 and < 1.0.0"
+giolt = ">= 0.8.0 and < 1.0.0"
 ```
 
 afterglow apps are written as [wisp](https://hexdocs.pm/wisp) handlers. You don't depend on
@@ -52,11 +53,12 @@ There is no `start/0` to write and nothing to register. `giolt` generates the en
 
 ## 3. Build the app
 
-`giolt` runs on JavaScript, so pass `--target javascript` even though your app targets Erlang:
-
 ```sh
-gleam run --target javascript -m giolt build
+gleam run -m giolt build
 ```
+
+`giolt` itself runs on JavaScript. Started from an Erlang project, it runs itself again with Node,
+or with Bun when Node isn't installed. If neither is installed, it stops and says so.
 
 It checks that `handle` has the right type, compiles your project to BEAM, compiles that to
 WebAssembly with afterglow, and links and optimises it with Binaryen. The first build downloads
@@ -74,13 +76,20 @@ See [About afterglow](/afterglow/about) for what that means at request time.
 - `host.mjs`: the code that runs `app.wasm` and converts requests and responses
 - `static/`: a copy of the `assets` directory, if you set one under `[tools.giolt]`
 
-Change the output directory with `outdir` under `[tools.giolt]`. `giolt dev` doesn't support the
-Erlang target yet.
+Change the output directory with `outdir` under `[tools.giolt]`.
 
-## 4. Run it locally with Bun
+## 4. Run it locally
 
-`index.mjs` uses `import wasm from "./app.wasm"`, which is how Cloudflare Workers load WebAssembly.
-Bun needs a small plugin to do the same:
+```sh
+gleam run -m giolt dev
+```
+
+`giolt dev` builds the app, serves it on http://localhost:3000 with `assets` in front of it, and
+rebuilds on every change under `watch`. Each rebuild runs the full afterglow build, so it takes a
+few seconds.
+
+To run `dist/` with Bun yourself: `index.mjs` uses `import wasm from "./app.wasm"`, which is how
+Cloudflare Workers load WebAssembly, and Bun needs a small plugin to do the same:
 
 ```ts
 import { plugin } from "bun";
@@ -108,7 +117,7 @@ bun run your_script.ts
 ## 5. Deploy it
 
 ```sh
-gleam run --target javascript -m giolt deploy
+gleam run -m giolt deploy
 ```
 
 `giolt deploy` builds the app and uploads `dist/` the same way it uploads a JavaScript app. Files in
