@@ -37,23 +37,23 @@ For a walkthrough from a fresh project, see [Get started](/get-started).
 
 ## Commands
 
-| Command                                                                      | What it does                                                                                              |
-| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `giolt build [--config FILE]`                                                | Checks `handle`, compiles and bundles into `outdir`.                                                      |
-| `giolt dev [--config FILE]`                                                  | Builds, watches, serves on `port` and reloads on change. JavaScript target only, except for static sites. |
-| `giolt deploy [--project NAME] [--preview] [--artifact DIR] [--config FILE]` | Builds, then uploads `outdir` to Giolt. With `artifact`, uploads that directory instead.                  |
-| `giolt login [--token -]`                                                    | Signs in through the browser, or stores a dashboard token read from stdin.                                |
-| `giolt logout`                                                               | Revokes the stored token and deletes it.                                                                  |
-| `giolt whoami`                                                               | Shows the signed-in account, the token and where it came from.                                            |
-| `giolt projects`                                                             | Lists your projects.                                                                                      |
-| `giolt projects create NAME`                                                 | Creates a project.                                                                                        |
-| `giolt projects rename OLD NEW`                                              | Renames a project, which changes its URL.                                                                 |
-| `giolt projects delete NAME [--yes]`                                         | Deletes a project after you type its name.                                                                |
-| `giolt link NAME [--config FILE]`                                            | Links this directory to a project, so `deploy` knows where to go.                                         |
-| `giolt unlink [--config FILE]`                                               | Removes the link.                                                                                         |
-| `giolt usage [--json]`                                                       | Shows your account's requests this billing period.                                                        |
-| `giolt help`                                                                 | Prints the commands. `giolt` with no arguments does the same.                                             |
-| `giolt <command> --help`                                                     | Prints that command's flags.                                                                              |
+| Command                                                                      | What it does                                                                             |
+| ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `giolt build [--config FILE]`                                                | Checks `handle`, compiles and bundles into `outdir`.                                     |
+| `giolt dev [--config FILE]`                                                  | Builds, watches, serves on `port` and reloads on change.                                 |
+| `giolt deploy [--project NAME] [--preview] [--artifact DIR] [--config FILE]` | Builds, then uploads `outdir` to Giolt. With `artifact`, uploads that directory instead. |
+| `giolt login [--token -]`                                                    | Signs in through the browser, or stores a dashboard token read from stdin.               |
+| `giolt logout`                                                               | Revokes the stored token and deletes it.                                                 |
+| `giolt whoami`                                                               | Shows the signed-in account, the token and where it came from.                           |
+| `giolt projects`                                                             | Lists your projects.                                                                     |
+| `giolt projects create NAME`                                                 | Creates a project.                                                                       |
+| `giolt projects rename OLD NEW`                                              | Renames a project, which changes its URL.                                                |
+| `giolt projects delete NAME [--yes]`                                         | Deletes a project after you type its name.                                               |
+| `giolt link NAME [--config FILE]`                                            | Links this directory to a project, so `deploy` knows where to go.                        |
+| `giolt unlink [--config FILE]`                                               | Removes the link.                                                                        |
+| `giolt usage [--json]`                                                       | Shows your account's requests this billing period.                                       |
+| `giolt help`                                                                 | Prints the commands. `giolt` with no arguments does the same.                            |
+| `giolt <command> --help`                                                     | Prints that command's flags.                                                             |
 
 `gleam run -m giolt -h` prints help for `gleam run`, not for `giolt`, because Gleam reads
 the flag first. Use `gleam run -m giolt help` instead.
@@ -181,7 +181,8 @@ gleam run -m giolt dev
 It builds once, then rebuilds on every change under `watch` and serves the result. The
 server hot-reloads the worker, serves `assets` straight from disk, and reloads open
 browser tabs when `live_reload` is on. A failed rebuild prints the error and the server keeps
-serving the last worker it loaded.
+serving the last worker it loaded. For the Erlang target it runs the afterglow build and serves
+`app.wasm` through `host.mjs`, so a request runs the same Wasm module a deploy does.
 
 ## `giolt deploy`
 
@@ -366,11 +367,12 @@ where your build writes to.
 ## Erlang target
 
 A project with `target = "erlang"` builds with afterglow. `giolt build` needs Erlang/OTP and
-rebar3 installed and tells you which one is missing. Run it with
-`gleam run --target javascript -m giolt build`, because giolt itself runs on JavaScript. The
+rebar3 installed and tells you which one is missing. Run it with `gleam run -m giolt build` as
+usual. giolt itself runs on JavaScript, so it runs itself again with Node, or with Bun when Node
+isn't installed, and stops with a message when neither is. The
 output is `app.wasm`, `index.mjs` and `host.mjs`, plus `static/` when `assets` is set, and the build
 lists any functions your app reaches that afterglow doesn't provide. `deploy` uploads it like a
-JavaScript build. `dev` doesn't support this target yet. See
+JavaScript build, and `dev` serves it locally. See
 [How to use afterglow](/afterglow/how-to-use).
 
 ## Next steps
