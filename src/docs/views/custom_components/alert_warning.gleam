@@ -5,7 +5,7 @@ import mork/document
 
 pub fn container(content: String) {
   let icon =
-    element.to_document_string(
+    element.to_string(
       lucide_lustre.triangle_alert([
         attribute.class("h-6 w-6 shrink-0 stroke-current"),
       ]),
