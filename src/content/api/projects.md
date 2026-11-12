@@ -31,11 +31,12 @@ Routes for your account and its projects. All of them live under
   this rather than the slug.
 - **`slug`** — the project's name, and the first part of its URL. The CLI calls it the
   project name.
-- **`suspended`** — `true` while the account's subscription is inactive. A suspended
-  project serves a placeholder page until billing is current again.
+- **`suspended`** — `true` while the account's subscription is inactive or the account
+  has used its requests for the billing period. A suspended project serves a
+  placeholder page until billing is current again or the next period starts.
 - **`latest_deployment`** — `null` until the first deploy. Its `status` is `live` while
   it serves the project, `ready` once a newer deploy has replaced it, and `suspended`
-  while the project is offline for an unpaid balance.
+  while the project is offline.
 
 A slug is 3 to 63 characters of lowercase letters, digits and hyphens, and can't start
 or end with a hyphen. Some names are reserved and answer `409 slug_reserved`.

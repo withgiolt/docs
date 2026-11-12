@@ -96,6 +96,7 @@ and is safe to show as it is.
 | 400    | `invalid_request`, `invalid_slug`, `not_implemented` | the body is malformed, or asks for something not built yet            |
 | 401    | `unauthorized`                                       | the token is missing, unknown, expired or revoked                     |
 | 402    | `billing_required`                                   | the account has no active subscription                                |
+| 402    | `usage_limit`                                        | the account used its requests for this billing period                 |
 | 403    | `forbidden`                                          | the token lacks the scope                                             |
 | 404    | `not_found`                                          | no such project in your account                                       |
 | 409    | `slug_taken`, `slug_reserved`, `project_limit`       | the name is in use or reserved, or you have 5 projects                |
@@ -112,6 +113,10 @@ exist.
 Creating, renaming, deleting and deploying need an active subscription and return `402
 billing_required` without one. The message includes the link to fix it. Reading your
 account, projects and usage always works, so you can still see what you have.
+
+Deploying also fails with `402 usage_limit` once the account has used the requests its
+plan includes for the billing period. It works again when the next period starts. See
+[Limits](/limits).
 
 ## Rate limits
 
