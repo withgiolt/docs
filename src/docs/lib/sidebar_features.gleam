@@ -31,6 +31,7 @@ pub fn get_sidebar_features(current_path: String) {
     SidebarDropdown("afterglow - EXPERIMENTAL", [
       SidebarLink("About afterglow", "/afterglow/about", False, current_path:),
       SidebarLink("How to use", "/afterglow/how-to-use", False, current_path:),
+      SidebarLink("Benchmarks", "/afterglow/benchmarks", False, current_path:),
     ]),
   ]
 }
