@@ -33,6 +33,9 @@ afterglow works, and
 [Differences from Erlang](https://github.com/withgiolt/afterglow#differences-from-erlang) lists
 every difference. The list below covers the ones you're most likely to meet.
 
+afterglow is slower than erl at most computation, and much slower with large maps and big integers.
+[Benchmarks](/afterglow/benchmarks) compares it with erl and Gleam's JavaScript target.
+
 ## Limitations
 
 - **Missing functions.** Some OTP functions and NIFs aren't in afterglow yet. `giolt build` lists the
