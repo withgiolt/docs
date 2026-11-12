@@ -72,7 +72,8 @@ pub fn handle(
 }
 ```
 
-On the Erlang target ([afterglow](/afterglow/how-to-use)):
+On the Erlang target ([afterglow](/afterglow/how-to-use), a research preview that is not for
+production use):
 
 ```gleam
 pub fn handle(request: wisp.Request) -> wisp.Response
@@ -366,8 +367,8 @@ where your build writes to.
 
 ## Erlang target
 
-A project with `target = "erlang"` builds with afterglow. `giolt build` needs Erlang/OTP 28
-or 29 and rebar3 installed and tells you which one is missing. Run it with `gleam run -m giolt build` as
+A project with `target = "erlang"` builds with afterglow, a research preview that is not for
+production use. `giolt build` needs Erlang/OTP 28 or 29 and rebar3 installed and tells you which one is missing. Run it with `gleam run -m giolt build` as
 usual. giolt itself runs on JavaScript, so it runs itself again with Node, or with Bun when Node
 isn't installed, and stops with a message when neither is. The
 output is `app.wasm`, `index.mjs` and `host.mjs`, plus `static/` when `assets` is set, and the build
