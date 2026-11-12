@@ -8,9 +8,11 @@ This page walks through building a Gleam app for the Erlang target with afterglo
 result locally and deploying it to Giolt.
 
 > [!WARNING]
-> afterglow is experimental. You need Gleam, Erlang/OTP 28 or 29, rebar3, and Node.js 20+ or Bun
-> installed to build an app.
-> Building works on Linux and macOS (x64 and arm64) and Windows (x64).
+> afterglow is an experimental research preview and not for production use. See
+> [About afterglow](/afterglow/about) for what it doesn't support.
+
+You need Gleam, Erlang/OTP 28 or 29, rebar3, and Node.js 20+ or Bun installed to build an app.
+Building works on Linux and macOS (x64 and arm64) and Windows (x64).
 
 ## 1. Add the dependencies
 
@@ -120,10 +122,11 @@ bun run your_script.ts
 gleam run -m giolt deploy
 ```
 
-`giolt deploy` builds the app and uploads `dist/` the same way it uploads a JavaScript app. Files in
-`static/` are served before requests reach your app, so put images, CSS and other static files in
-the `assets` directory rather than serving them with `wisp.serve_static`: the Wasm build has no
-file system to read them from.
+`giolt deploy` builds the app and uploads `dist/` the same way it uploads a JavaScript app. A
+deployed Erlang-target app runs on afterglow, a research preview that is not for production use.
+Files in `static/` are served before requests reach your app, so put images, CSS and other static
+files in the `assets` directory rather than serving them with `wisp.serve_static`: the Wasm build
+has no file system to read them from.
 
 ## Environment variables
 

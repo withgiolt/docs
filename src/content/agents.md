@@ -5,7 +5,8 @@ title = "For coding agents"
 # For coding agents
 
 Giolt hosts Gleam projects. This page is the short version of the docs for a coding agent,
-written for the JavaScript target. The Erlang target is experimental; see
+written for the JavaScript target. The Erlang target runs on afterglow, a research preview that
+is not for production use; see
 [How to use afterglow](/afterglow/how-to-use). The same text is served as plain text at
 [docs.giolt.com/llms.txt](https://docs.giolt.com/llms.txt), followed by an index of every
 page.
@@ -79,8 +80,8 @@ gleam run -m giolt deploy
 - **Reserved paths.** Module and asset paths starting with `__giolt` are rejected.
 - **Limits.** 5 projects per account, 5,000 files and 32 MiB per deploy, 10 MiB per
   file.
-- **afterglow.** Projects targeting `erlang` build with afterglow, which is experimental.
-  `giolt dev` and `giolt deploy` work for them. See
+- **afterglow.** Projects targeting `erlang` build with afterglow, a research preview that is
+  not for production use. `giolt dev` and `giolt deploy` work for them. See
   [About afterglow](/afterglow/about).
 
 ## Errors

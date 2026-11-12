@@ -24,8 +24,8 @@ This walks through taking a Gleam project from nothing to deployed on Giolt: add
   target = "javascript"
   ```
 
-  Projects targeting `erlang` build with [afterglow](/afterglow/about) instead, which is
-  experimental. `giolt dev` and `giolt deploy` work for them; see
+  Projects targeting `erlang` build with [afterglow](/afterglow/about) instead, a research
+  preview that is not for production use. `giolt dev` and `giolt deploy` work for them; see
   [How to use afterglow](/afterglow/how-to-use).
 
 ## 1. Add the CLI

@@ -41,7 +41,8 @@ encoded as base64.
 
 - A deploy with modules needs one at `index.mjs`, the Worker's entry. An Erlang-target build
   uploads afterglow's `index.mjs` and `host.mjs` with `app.wasm`; a root `app.wasm` marks the
-  deployment as Erlang.
+  deployment as Erlang. afterglow is a
+  [research preview that is not for production use](/afterglow/about).
 - A deploy with no modules is a static site: its assets are served with no Worker. `spa`
   only works on these.
 - Paths are compared after resolving `.` and `..`, so two paths that point at the same

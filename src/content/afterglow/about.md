@@ -4,15 +4,19 @@ title = "About afterglow"
 
 # About afterglow
 
-afterglow is Giolt's runtime for Gleam's Erlang target. It compiles your app's BEAM bytecode to
-WebAssembly ahead of time and links it with a small runtime written in Rust, so the app runs as a
-Cloudflare Worker. Its source is at [withgiolt/afterglow](https://github.com/withgiolt/afterglow).
+afterglow compiles a Gleam app's BEAM bytecode to WebAssembly ahead of time and links it with a
+small runtime written in Rust, so an app written for the Erlang target runs as a Cloudflare Worker.
+Its source is at [withgiolt/afterglow](https://github.com/withgiolt/afterglow).
 
 > [!WARNING]
-> afterglow is experimental. The runtime, the `giolt` build for it and these docs will change, so
-> expect breaking changes.
+> afterglow is an experimental research preview. You can deploy apps built with it on Giolt, but it
+> is not for production use. It runs a subset of OTP with different process semantics from the BEAM,
+> and the runtime, the `giolt` build for it and these docs will change without notice.
 
-New to afterglow? [How to use afterglow](/afterglow/how-to-use) walks through building an app.
+New to afterglow? [How to use afterglow](/afterglow/how-to-use) walks through building an app with
+the `giolt` CLI. To build without Giolt, follow
+[the manual path](https://github.com/withgiolt/afterglow#manually-without-giolt) in afterglow's
+README.
 
 ## How it works
 
@@ -20,9 +24,14 @@ New to afterglow? [How to use afterglow](/afterglow/how-to-use) walks through bu
 your handler can reach, including the parts of OTP's `stdlib`, `kernel` and `erts` it calls, into one
 `app.wasm`. Nothing interprets bytecode at request time, and one Wasm instance serves many requests.
 
-Because the input is the same BEAM code that runs on Erlang/OTP, integers have arbitrary precision,
-binaries and bitstrings match the way they do on the BEAM, and `gleam_stdlib` behaves as it does on
-Erlang. afterglow's tests compare its output with real `erl`.
+afterglow is not Erlang/OTP. Some behaviour matches because the input is the same bytecode:
+integers have arbitrary precision, binaries and bitstrings match the way they do on the BEAM, and
+afterglow's tests compare `gleam_stdlib`'s output with real `erl`. Processes are different. afterglow
+schedules them cooperatively, with no preemption, and they share one heap with no isolation between
+them. The README's [design section](https://github.com/withgiolt/afterglow#design) explains how
+afterglow works, and
+[Differences from Erlang](https://github.com/withgiolt/afterglow#differences-from-erlang) lists
+every difference. The list below covers the ones you're most likely to meet.
 
 ## Limitations
 
