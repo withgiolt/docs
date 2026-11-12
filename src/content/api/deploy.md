@@ -82,6 +82,7 @@ path that caused it.
 | 400    | `invalid_request`   | invalid JSON or base64, a duplicate or reserved path, no `index.mjs`, `spa` with modules, or nothing to deploy |
 | 400    | `not_implemented`   | `preview` is `true`                                                                                            |
 | 402    | `billing_required`  | the account has no active subscription                                                                         |
+| 402    | `usage_limit`       | the account used its requests for this billing period                                                          |
 | 403    | `forbidden`         | the token lacks `deploy`                                                                                       |
 | 413    | `payload_too_large` | over one of the limits above                                                                                   |
 | 502    | `upstream_failed`   | Giolt couldn't finish the deploy; try again                                                                    |

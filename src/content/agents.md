@@ -48,7 +48,8 @@ pub fn handle(
 - In CI or any shell with no browser, set `GIOLT_TOKEN` to an API token with the `deploy`
   scope. The user creates it on the dashboard Tokens page. No API route creates tokens.
 - Creating a project and deploying need an active subscription. Without one the API
-  answers `402 billing_required`.
+  answers `402 billing_required`. An account that used its requests for the billing
+  period can't deploy until the next one starts and gets `402 usage_limit`.
 
 ## Deploy
 
