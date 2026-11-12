@@ -8,8 +8,8 @@ This page walks through building a Gleam app for the Erlang target with afterglo
 result locally and deploying it to Giolt.
 
 > [!WARNING]
-> afterglow is experimental. You need Gleam, Erlang/OTP, rebar3, and Node.js 20+ or Bun installed
-> to build an app.
+> afterglow is experimental. You need Gleam, Erlang/OTP 28 or 29, rebar3, and Node.js 20+ or Bun
+> installed to build an app.
 > Building works on Linux and macOS (x64 and arm64) and Windows (x64).
 
 ## 1. Add the dependencies
