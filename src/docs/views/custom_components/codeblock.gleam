@@ -26,7 +26,7 @@ pub fn container(language: option.Option(String), content: String) {
   let tokens = smalto.to_tokens(content, lang)
   let elements = smalto_lustre.to_lustre(tokens, themes.one_dark())
 
-  let html = element.to_document_string(html.pre([], elements))
+  let html = element.to_string(html.pre([], elements))
 
   document.HtmlBlock(html)
 }
