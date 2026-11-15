@@ -51,6 +51,9 @@ For a walkthrough from a fresh project, see [Get started](/get-started).
 | `giolt projects delete NAME [--yes]`                                         | Deletes a project after you type its name.                                               |
 | `giolt link NAME [--config FILE]`                                            | Links this directory to a project, so `deploy` knows where to go.                        |
 | `giolt unlink [--config FILE]`                                               | Removes the link.                                                                        |
+| `giolt env`                                                                  | Lists the project's environment variables.                                               |
+| `giolt env set NAME [--secret]`                                              | Sets a variable from standard input.                                                     |
+| `giolt env rm NAME`                                                          | Removes a variable.                                                                      |
 | `giolt usage [--json]`                                                       | Shows your account's requests this billing period.                                       |
 | `giolt help`                                                                 | Prints the commands. `giolt` with no arguments does the same.                            |
 | `giolt <command> --help`                                                     | Prints that command's flags.                                                             |
@@ -133,6 +136,8 @@ project = 7
   Worker. See [Static sites](#static-sites).
 - **`project`** — defaults to none. The id of the project `deploy` ships to. `giolt link`
   writes it; you don't need to set it by hand.
+- **`env`** — defaults to none. The names of the environment variables the app reads;
+  see [`giolt env`](#giolt-env).
 
 The bundle has nothing else to configure: Giolt produces one kind of artifact, a
 minified, tree-shaken ESM bundle wrapped in the platform's worker entry.
@@ -302,6 +307,46 @@ gleam run -m giolt projects delete my-new-name
   Without a terminal to ask in and without `--yes`, it refuses.
 
 Creating, renaming and deleting need an active subscription. Listing always works.
+
+## `giolt env`
+
+A project's environment variables and secrets are stored on Giolt, not in the
+repository. List the ones your app reads under `[tools.giolt]`, and a deploy hands the
+app exactly those:
+
+```toml
+[tools.giolt]
+env = ["DATABASE_URL", "API_KEY"]
+```
+
+```sh
+gleam run -m giolt env
+gleam run -m giolt env set DATABASE_URL --secret < database-url.txt
+gleam run -m giolt env rm API_KEY
+```
+
+- **`env`** lists the project's variables. A secret is listed by name only.
+- **`set`** reads the value from standard input, so it stays out of your shell history,
+  and asks for it when run in a terminal. With `--secret` the value is never shown
+  again. Setting a name that exists replaces its value. The value is one line; set a
+  multi-line value on the dashboard.
+- **`rm`** removes a variable.
+
+Each command acts on the linked project, or on `--project NAME`. Listing needs the
+`projects:read` scope, and setting and removing need `projects:write`.
+
+A change reaches the app on its next deploy. `giolt deploy` is refused when `env` names
+a variable the project doesn't have, and the version that was live keeps serving.
+
+A name is upper-case letters, digits and underscores, at most 64 characters, and can't
+start with a digit or with `GIOLT_`. A project holds up to 64 variables of at most
+5,120 bytes each.
+
+In a deployed JavaScript-target app, each declared variable is a string property of the
+object under `globalThis[Symbol.for("giolt.platform")]`. An Erlang-target app reads it
+with `os:getenv/1`. Libraries that read the process environment on JavaScript, such as
+`envoy`, don't see these variables. There is no typed accessor yet, and `giolt dev`
+does not provide the variables.
 
 ## `giolt link`
 
