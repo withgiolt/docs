@@ -14,6 +14,8 @@ https://dash.giolt.com/api/v1
 - [Projects](/api/projects): list, create, rename and delete projects, and read your
   account and usage.
 - [Deploy](/api/deploy): upload a new version of a project.
+- [Environment variables](/api/env): list, set and delete a project's variables and
+  secrets.
 
 Timestamps are RFC 3339 strings in UTC, such as `2026-11-03T11:35:05Z`.
 

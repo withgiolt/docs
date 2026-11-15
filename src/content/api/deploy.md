@@ -35,6 +35,7 @@ that is live.
 | `assets`  | array   | no       | static files, served as they are                                               |
 | `spa`     | boolean | no       | serve `index.html` for paths that match no asset; static sites only            |
 | `preview` | boolean | no       | `true` is rejected until preview deployments exist; see [Limits](/limits)      |
+| `env`     | array   | no       | names of the [environment variables](/api/env) the app reads                   |
 
 Each file is `{ "path": "...", "content_base64": "..." }`, with the file's bytes
 encoded as base64.
@@ -43,6 +44,9 @@ encoded as base64.
   uploads afterglow's `index.mjs` and `host.mjs` with `app.wasm`; a root `app.wasm` marks the
   deployment as Erlang. afterglow is a
   [research preview that is not for production use](/afterglow/about).
+- The Worker receives exactly the variables named in `env`, as string properties of the
+  second argument of its `fetch`, and none when `env` is absent. A name the project has
+  no variable for is refused, and the version that was live keeps serving.
 - A deploy with no modules is a static site: its assets are served with no Worker. `spa`
   only works on these.
 - Paths are compared after resolving `.` and `..`, so two paths that point at the same
@@ -78,14 +82,14 @@ add up to 32 MiB.
 Errors use the shared format described in the [API overview](/api/about). The `message` names the limit or the
 path that caused it.
 
-| Status | `code`              | When                                                                                                           |
-| ------ | ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| 400    | `invalid_request`   | invalid JSON or base64, a duplicate or reserved path, no `index.mjs`, `spa` with modules, or nothing to deploy |
-| 400    | `not_implemented`   | `preview` is `true`                                                                                            |
-| 402    | `billing_required`  | the account has no active subscription                                                                         |
-| 403    | `forbidden`         | the token lacks `deploy`                                                                                       |
-| 413    | `payload_too_large` | over one of the limits above                                                                                   |
-| 502    | `upstream_failed`   | Giolt couldn't finish the deploy; try again                                                                    |
+| Status | `code`              | When                                                                                                                                                                      |
+| ------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 400    | `invalid_request`   | invalid JSON or base64, a duplicate or reserved path, no `index.mjs`, `spa` with modules, nothing to deploy, or an `env` name that is malformed or not set on the project |
+| 400    | `not_implemented`   | `preview` is `true`                                                                                                                                                       |
+| 402    | `billing_required`  | the account has no active subscription                                                                                                                                    |
+| 403    | `forbidden`         | the token lacks `deploy`                                                                                                                                                  |
+| 413    | `payload_too_large` | over one of the limits above                                                                                                                                              |
+| 502    | `upstream_failed`   | Giolt couldn't finish the deploy; try again                                                                                                                               |
 
 ## Older CLIs
 
