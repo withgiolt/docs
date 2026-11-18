@@ -10,9 +10,8 @@ afterglow itself doesn't support.
 
 ## Not yet supported
 
-- **Environment variables & bindings.** Deployed projects carry no bindings at all.
-  Nothing you deploy can read anything from `env`.
-  Planned, not started.
+- **Bindings.** Deployed projects carry no Worker bindings. Environment variables
+  work; see [Environment variables](/cli#environment-variables).
 - **Custom domains.** Every project gets `<slug>.giolt.app`; there's no way to attach
   your own domain yet. In progress.
 - **Preview deployments & rollbacks.** `giolt deploy --preview` is rejected with a 400

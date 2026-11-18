@@ -52,6 +52,9 @@ For a walkthrough from a fresh project, see [Get started](/get-started).
 | `giolt link NAME [--config FILE]`                                            | Links this directory to a project, so `deploy` knows where to go.                        |
 | `giolt unlink [--config FILE]`                                               | Removes the link.                                                                        |
 | `giolt usage [--json]`                                                       | Shows your account's requests this billing period.                                       |
+| `giolt env [list] [--json]`                                                  | Lists the project's environment variables. Secrets show as `(secret)`.                   |
+| `giolt env set NAME [VALUE] [--secret]`                                      | Sets a variable. Without `VALUE` it reads one line from stdin.                           |
+| `giolt env delete NAME`                                                      | Deletes a variable.                                                                      |
 | `giolt help`                                                                 | Prints the commands. `giolt` with no arguments does the same.                            |
 | `giolt <command> --help`                                                     | Prints that command's flags.                                                             |
 
@@ -133,6 +136,9 @@ project = 7
   Worker. See [Static sites](#static-sites).
 - **`project`** — defaults to none. The id of the project `deploy` ships to. `giolt link`
   writes it; you don't need to set it by hand.
+- **`env`** — defaults to `[]`. The names of the project's environment variables the
+  app reads. See [Environment variables](#environment-variables). Not allowed with
+  `artifact`.
 
 The bundle has nothing else to configure: Giolt produces one kind of artifact, a
 minified, tree-shaken ESM bundle wrapped in the platform's worker entry.
@@ -205,8 +211,7 @@ in below. It picks the project from `--project`, then from the `project` key tha
 | ------------------------------- | -------------------------- | ---------------- |
 | fails: link or pass `--project` | deploys the linked project | deploys `NAME`   |
 
-A token covers your whole account, so it never names a project by itself. There is no
-`.env` loading.
+A token covers your whole account, so it never names a project by itself.
 
 Module and asset paths starting with `__giolt` are reserved and rejected. The
 platform's own metering code uses that prefix.
@@ -337,6 +342,37 @@ scripts and agents: `requests`, `included`, `period_start` and `period_end`. The
 `null` for an account that hasn't subscribed yet.
 
 It needs a login or a token with the `projects:read` scope.
+
+## Environment variables
+
+List the variables your app reads under `env` in `[tools.giolt]`, and set their values
+with `giolt env set` or on the project's dashboard page. A name is upper case letters,
+digits and `_`, at most 64 characters, and can't start with a digit or with `GIOLT_`. A project holds up to 64 variables, and a value is at most 5,120 bytes of UTF-8 with no NUL character.
+
+```sh
+gleam run -m giolt env set REGION eu
+printf '%s\n' "$API_KEY" | gleam run -m giolt env set API_KEY --secret
+gleam run -m giolt env
+```
+
+`set` without a value reads one line from stdin, so a secret stays out of your shell history. With `--secret` at a terminal, what you type isn't shown. A secret's value is never shown again: `giolt env` prints `(secret)`, and
+`--json` prints `null`. The commands use the linked project, or `--project NAME`.
+Listing needs a token with `projects:read`; setting and deleting need `projects:write`, and `--project NAME` also needs `projects:read` to look the name up.
+
+`giolt deploy` sends the names in `env`, and Giolt hands the app only those. A deploy
+that names a variable the project doesn't have fails, and the live version keeps serving. A
+change reaches the app on its next deploy, and the live version keeps the old value
+until then.
+
+The app reads them from the environment, so env packages such as
+[envie](https://hex.pm/packages/envie) and [envoy](https://hex.pm/packages/envoy) work
+on both targets. On JavaScript the worker entry copies them into `process.env`; on
+Erlang afterglow serves them to `os:getenv`. A deployed app gets them when a request arrives, so code that runs while modules load doesn't see them.
+
+`giolt dev` takes each declared variable from the shell, or from `.env` when the shell
+doesn't set it, and when it starts it warns about any it can't find. It leaves out a value Giolt would refuse and says why. It reads `.env` again before every
+rebuild, and never copies an undeclared `.env` entry into the app. On the JavaScript
+target the app runs inside the `giolt` process, so it can also see variables your shell exports that `env` doesn't list or that dev leaves out. Keep `.env` out of git.
 
 ## Static sites
 

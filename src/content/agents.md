@@ -74,8 +74,9 @@ gleam run -m giolt deploy
 
 - **Rollback.** There is none. Deploy an older build again.
 - **Preview deployments.** `giolt deploy --preview` fails with a 400.
-- **Environment variables and bindings.** A deployed project can read nothing from
-  `env`. `GIOLT_TOKEN` and `GIOLT_API_URL` configure the CLI only.
+- **Bindings.** A deployed project gets no Worker bindings. It reads environment
+  variables only when `env` in `[tools.giolt]` lists them; see
+  [Environment variables](/cli#environment-variables).
 - **Custom domains.** Every project is `<slug>.giolt.app`.
 - **Reserved paths.** Module and asset paths starting with `__giolt` are rejected.
 - **Limits.** 5 projects per account, 5,000 files and 32 MiB per deploy, 10 MiB per
@@ -113,6 +114,7 @@ Copy this into the `AGENTS.md` of a project that deploys to Giolt:
 - Deploy with `gleam run -m giolt deploy`. It builds first and ships to production.
 - Don't run `giolt login`. It needs a browser. Ask me, or use `GIOLT_TOKEN`.
 - Handlers use `conversation` types and export `handle`.
-- There is no rollback, no preview deploy and no environment variables.
+- There is no rollback and no preview deploy.
+- An environment variable reaches the app only when `env` under `[tools.giolt]` lists it.
 - Docs for agents: https://docs.giolt.com/llms.txt
 ```

@@ -131,8 +131,10 @@ has no file system to read them from.
 ## Environment variables
 
 The string values in the second argument of `fetch` become your app's environment, so `envie` reads
-them as usual. Giolt doesn't pass environment variables to deployed apps yet. Locally, pass them
-yourself, for example `worker.fetch(request, { SECRET_KEY: "secret" })`:
+them as usual. Giolt passes the variables your `env` key lists, both when deployed and in
+`giolt dev`; see [Environment variables](/cli#environment-variables). When you run the Worker
+yourself, pass them as that argument, for example
+`worker.fetch(request, { SECRET_KEY: "secret" })`:
 
 ```gleam
 import envie
