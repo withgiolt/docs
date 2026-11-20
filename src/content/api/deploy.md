@@ -25,16 +25,18 @@ that is live.
   "assets": [
     { "path": "index.html", "content_base64": "PCFkb2N0eXBlIGh0bWw+…" }
   ],
-  "spa": false
+  "spa": false,
+  "env": ["DATABASE_URL"]
 }
 ```
 
-| Field     | Type    | Required | Notes                                                                          |
-| --------- | ------- | -------- | ------------------------------------------------------------------------------ |
-| `modules` | array   | yes      | the Worker's modules (JavaScript, and `.wasm`); may be empty for a static site |
-| `assets`  | array   | no       | static files, served as they are                                               |
-| `spa`     | boolean | no       | serve `index.html` for paths that match no asset; static sites only            |
-| `preview` | boolean | no       | `true` is rejected until preview deployments exist; see [Limits](/limits)      |
+| Field     | Type    | Required | Notes                                                                                                              |
+| --------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| `modules` | array   | yes      | the Worker's modules (JavaScript, and `.wasm`); may be empty for a static site                                     |
+| `assets`  | array   | no       | static files, served as they are                                                                                   |
+| `spa`     | boolean | no       | serve `index.html` for paths that match no asset; static sites only                                                |
+| `preview` | boolean | no       | `true` is rejected until preview deployments exist; see [Limits](/limits)                                          |
+| `env`     | array   | no       | names of the project's [environment variables](/api/projects#environment-variables) the app gets; defaults to none |
 
 Each file is `{ "path": "...", "content_base64": "..." }`, with the file's bytes
 encoded as base64.
@@ -47,6 +49,9 @@ encoded as base64.
   only works on these.
 - Paths are compared after resolving `.` and `..`, so two paths that point at the same
   file are a duplicate.
+- The app gets only the variables `env` names, as string properties of the object its
+  `fetch` receives as the second argument. A static site can't read them, so naming any
+  without modules is refused.
 - Paths starting with `__giolt`, in any letter case, are reserved for modules and assets
   alike. So is a path that resolves above the root, such as `../x`.
 
@@ -78,14 +83,14 @@ add up to 32 MiB.
 Errors use the shared format described in the [API overview](/api/about). The `message` names the limit or the
 path that caused it.
 
-| Status | `code`              | When                                                                                                           |
-| ------ | ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| 400    | `invalid_request`   | invalid JSON or base64, a duplicate or reserved path, no `index.mjs`, `spa` with modules, or nothing to deploy |
-| 400    | `not_implemented`   | `preview` is `true`                                                                                            |
-| 402    | `billing_required`  | the account has no active subscription                                                                         |
-| 403    | `forbidden`         | the token lacks `deploy`                                                                                       |
-| 413    | `payload_too_large` | over one of the limits above                                                                                   |
-| 502    | `upstream_failed`   | Giolt couldn't finish the deploy; try again                                                                    |
+| Status | `code`              | When                                                                                                                                                                                                    |
+| ------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 400    | `invalid_request`   | invalid JSON or base64, a duplicate or reserved path, no `index.mjs`, `spa` with modules, nothing to deploy, an invalid name in `env`, `env` without modules, or an `env` name the project doesn't have |
+| 400    | `not_implemented`   | `preview` is `true`                                                                                                                                                                                     |
+| 402    | `billing_required`  | the account has no active subscription                                                                                                                                                                  |
+| 403    | `forbidden`         | the token lacks `deploy`                                                                                                                                                                                |
+| 413    | `payload_too_large` | over one of the limits above                                                                                                                                                                            |
+| 502    | `upstream_failed`   | Giolt couldn't finish the deploy; try again                                                                                                                                                             |
 
 ## Older CLIs
 

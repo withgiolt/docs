@@ -43,13 +43,17 @@ tokens, so a leaked token can't be used to make more.
 
 ### Scopes
 
-| Scope            | Allows                                   |
-| ---------------- | ---------------------------------------- |
-| `projects:read`  | listing and reading projects, and usage  |
-| `projects:write` | creating, renaming and deleting projects |
-| `deploy`         | deploying any project in the account     |
+| Scope            | Allows                                                                                         |
+| ---------------- | ---------------------------------------------------------------------------------------------- |
+| `projects:read`  | listing and reading projects, their environment variables, and usage                           |
+| `projects:write` | creating, renaming and deleting projects, and setting and deleting their environment variables |
+| `deploy`         | deploying any project in the account                                                           |
 
 `giolt login` asks for all three. For CI, create an API token with `deploy` only.
+
+A deploy can hand its app any of the project's environment variables, secrets
+included, so a `deploy` token can read the variables of every project you own through
+code it deploys.
 
 ### Signing in from a terminal
 
@@ -91,18 +95,18 @@ Every error response has the same body:
 `code` doesn't change between releases, so match on it. `message` is written for people
 and is safe to show as it is.
 
-| Status | `code`                                               | When                                                                  |
-| ------ | ---------------------------------------------------- | --------------------------------------------------------------------- |
-| 400    | `invalid_request`, `invalid_slug`, `not_implemented` | the body is malformed, or asks for something not built yet            |
-| 401    | `unauthorized`                                       | the token is missing, unknown, expired or revoked                     |
-| 402    | `billing_required`                                   | the account has no active subscription                                |
-| 403    | `forbidden`                                          | the token lacks the scope                                             |
-| 404    | `not_found`                                          | no such project in your account                                       |
-| 409    | `slug_taken`, `slug_reserved`, `project_limit`       | the name is in use or reserved, or you have 5 projects                |
-| 405    | `method_not_allowed`                                 | the path exists but not with this method; see the `Allow` header      |
-| 413    | `payload_too_large`                                  | the deploy is over a size limit                                       |
-| 429    | `rate_limited`                                       | too many requests; see [Rate limits](#rate-limits)                    |
-| 502    | `upstream_failed`                                    | Giolt couldn't finish the change; the `message` says whether to retry |
+| Status | `code`                                                          | When                                                                                             |
+| ------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 400    | `invalid_request`, `invalid_slug`, `not_implemented`            | the body is malformed, or asks for something not built yet                                       |
+| 401    | `unauthorized`                                                  | the token is missing, unknown, expired or revoked                                                |
+| 402    | `billing_required`                                              | the account has no active subscription                                                           |
+| 403    | `forbidden`                                                     | the token lacks the scope                                                                        |
+| 404    | `not_found`                                                     | no such project in your account                                                                  |
+| 409    | `slug_taken`, `slug_reserved`, `project_limit`, `env_var_limit` | the name is in use or reserved, you have 5 projects, or the project has 64 environment variables |
+| 405    | `method_not_allowed`                                            | the path exists but not with this method; see the `Allow` header                                 |
+| 413    | `payload_too_large`                                             | the deploy, or an environment variable's value, is over a size limit                             |
+| 429    | `rate_limited`                                                  | too many requests; see [Rate limits](#rate-limits)                                               |
+| 502    | `upstream_failed`                                               | Giolt couldn't finish the change; the `message` says whether to retry                            |
 
 A project that belongs to another account answers `404`, the same as one that doesn't
 exist.
